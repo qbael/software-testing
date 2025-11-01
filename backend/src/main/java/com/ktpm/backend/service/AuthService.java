@@ -1,0 +1,40 @@
+package com.ktpm.backend.service;
+
+import com.ktpm.backend.dto.LoginResponseDTO;
+import com.ktpm.backend.entity.User;
+import com.ktpm.backend.exception.UserNotFoundException;
+import com.ktpm.backend.exception.WrongPassWordException;
+import com.ktpm.backend.repository.UserRepository;
+import com.ktpm.backend.utils.JwtUtil;
+import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@AllArgsConstructor
+public class AuthService {
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+
+    public LoginResponseDTO authenticate(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException(
+                        "Không tìm thấy người dùng"));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new WrongPassWordException("Sai mật khẩu");
+        }
+
+        return new LoginResponseDTO(user.getId(), username);
+    }
+
+    public LoginResponseDTO getCurrentUser(String token) {
+        UUID id = jwtUtil.extractId(token);
+        String username = jwtUtil.extractUsername(token);
+
+        return new LoginResponseDTO(id, username);
+    }
+}

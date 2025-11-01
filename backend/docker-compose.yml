@@ -1,0 +1,23 @@
+name: ktpm
+services:
+  ktpm-db:
+    image: postgres:latest
+    container_name: ktpm-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ktpm
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+    volumes:
+      - ktpm-db:/var/lib/postgresql
+    networks:
+      - internal
+
+volumes:
+  ktpm-db:
+    driver: local
+
+networks:
+  internal:
+    driver: bridge

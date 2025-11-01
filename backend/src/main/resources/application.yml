@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: ktpm-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ktpm
+    username: root
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+jwt:
+  secret: VGhpcy1pcy1hLXNlY3JldC1rZXktZm9yLUpXVC0yNTYtYml0IQ==
+
+server:
+  port: 8080
