@@ -1,10 +1,10 @@
 package com.ktpm.backend.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 public class LoginRequestDTO {
     private String username;
     private String password;
