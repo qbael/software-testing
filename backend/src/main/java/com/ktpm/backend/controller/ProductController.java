@@ -1,7 +1,9 @@
 package com.ktpm.backend.controller;
 
 import com.ktpm.backend.entity.Product;
+import com.ktpm.backend.exception.ProductNotFoundException;
 import com.ktpm.backend.service.ProductService;
+import com.ktpm.backend.utils.Validator;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -20,11 +23,18 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<Page<Product>> getAll(
-        @RequestParam(required = false, defaultValue = "0") Integer page,
-        @RequestParam(required = false, defaultValue = "10") Integer limit,
-        @RequestParam(required = false, defaultValue = "id") String sortBy,
-        @RequestParam(required = false, defaultValue = "asc") String sortDir
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer limit,
+            @RequestParam(required = false, defaultValue = "id") String sortBy,
+            @RequestParam(required = false, defaultValue = "asc") String sortDir
     ) {
+        if (page < 0
+                || limit <= 0
+                || (!sortDir.equalsIgnoreCase("ASC") && !sortDir.equalsIgnoreCase("DESC"))
+                || Validator.isBlank(sortBy)
+        ) {
+            return ResponseEntity.badRequest().build();
+        }
         Pageable pageable = PageRequest.of(page, limit, Sort.by(
                 sortDir.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy
         ));
@@ -37,16 +47,32 @@ public class ProductController {
     public ResponseEntity<Product> getProduct(
             @PathVariable UUID id
     ) {
-        Product product = productService.getProduct(id);
-        return ResponseEntity.ok(product);
+        if (Validator.isBlank(String.valueOf(id))) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            Optional<Product> product = productService.getProduct(id);
+            return product.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PostMapping
     public ResponseEntity<Product> createProduct(
             @RequestBody Product product
     ) {
-        Product createdProduct = productService.createProduct(product);
-        return ResponseEntity.ok(createdProduct);
+        if (!Validator.isValidProduct(product)) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            Product createdProduct = productService.createProduct(product);
+            return ResponseEntity.ok(createdProduct);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @PutMapping("/{id}")
@@ -54,15 +80,33 @@ public class ProductController {
             @PathVariable UUID id,
             @RequestBody Product product
     ) {
-        Product updateProduct = productService.updateProduct(id, product);
-        return ResponseEntity.ok(updateProduct);
+        if (!Validator.isValidProduct(product)) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            Product updatedProduct = productService.updateProduct(id, product);
+            return ResponseEntity.ok(updatedProduct);
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable UUID id
     ) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+        if (Validator.isBlank(String.valueOf(id))) {
+            return ResponseEntity.badRequest().build();
+        }
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok().build();
+        } catch (ProductNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
