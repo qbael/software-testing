@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,13 +20,17 @@ public class ProductService {
         return productRepository.findAll(pageable);
     }
 
-    public Product getProduct(UUID id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Không tìm thấy sản phẩm"));
+    public Optional<Product> getProduct(UUID id) {
+        return Optional.ofNullable(productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Không tìm thấy sản phẩm")));
     }
 
     public Product createProduct(Product product) {
-        return productRepository.save(product);
+        try {
+            return productRepository.save(product);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi tạo sản phẩm");
+        }
     }
 
     public Product updateProduct(UUID id, Product product) {
@@ -37,11 +42,21 @@ public class ProductService {
         oldProduct.setQuantity(product.getQuantity());
         oldProduct.setDescription(product.getDescription());
         oldProduct.setCategory(product.getCategory());
+        try {
+            return productRepository.save(oldProduct);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi cập nhật sản phẩm");
+        }
 
-        return productRepository.save(oldProduct);
     }
 
     public void deleteProduct(UUID id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Không tìm thấy sản phẩm"));
+        try {
+            productRepository.delete(product);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi xóa sản phẩm");
+        }
     }
 }
