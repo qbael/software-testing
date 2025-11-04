@@ -32,11 +32,7 @@ public class AuthController {
         String username = loginRequestDTO.getUsername();
         String password = loginRequestDTO.getPassword();
 
-        if (Validator.isBlank(username) || Validator.isBlank(password)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-
-        if (Validator.isValidUsername(username) || Validator.isValidPassword(password)) {
+        if (!Validator.isValidUsername(username) || !Validator.isValidPassword(password)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 

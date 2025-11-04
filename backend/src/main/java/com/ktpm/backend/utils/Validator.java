@@ -9,7 +9,7 @@ public class Validator {
 
     public static boolean isBlank(String str) {
         str = str == null ? null : str.trim();
-        return str == null || str.trim().isEmpty();
+        return str == null || str.isBlank();
     }
 
     public static boolean isSizeInRange(String str, int min, int max) {
@@ -20,14 +20,14 @@ public class Validator {
 
     public static boolean isValidUsername(String username) {
         String usernameRegex = "^[a-zA-Z0-9._-]{3,50}$";
-        username = username == null ? null : username.trim();
-        return username != null && !username.isEmpty() && username.matches(usernameRegex);
+        boolean isNullOrBlank = isBlank(username);
+        return !isNullOrBlank && username.matches(usernameRegex);
     }
 
     public static boolean isValidPassword(String password) {
         String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,100}$";
-        password = password == null ? null : password.trim();
-        return password != null && !password.isEmpty() && password.matches(passwordRegex);
+        boolean isNullOrBlank = isBlank(password);
+        return !isNullOrBlank && password.matches(passwordRegex);
     }
 
     public static boolean isValidProduct(Product product) {
@@ -44,9 +44,8 @@ public class Validator {
                 product.getQuantity() >= 0 &&
                 product.getQuantity() <= 99999;
 
-        boolean isDescriptionValid = product.getDescription() == null ||
+        boolean isDescriptionValid = !isBlank(product.getDescription()) &&
                 isSizeInRange(product.getDescription(), 0, 500);
-
 
         boolean isCategoryValid = product.getCategory() != null &&
                 isValidCategory(product.getCategory().name());
