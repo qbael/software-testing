@@ -1,0 +1,45 @@
+export const updateProductModel = {
+    formName: 'Cập nhật sản phẩm',
+    model: {
+        product_name: {
+            idAttr: `updateProductName`,
+            label: 'Product Name',
+            type: `text`,
+            nameAttr: `product_name`,
+            required: true,
+            placeholder: 'Enter product name',
+        },
+        price: {
+            idAttr: `updatePrice`,
+            label: 'Price',
+            type: `number`,
+            nameAttr: `price`,
+            required: true,
+            placeholder: 'Enter price',
+        },
+        quantity: {
+            idAttr: `updateQuantity`,
+            label: 'Quantity',
+            type: `number`,
+            nameAttr: `quantity`,
+            required: true,
+            placeholder: 'Enter quantity',
+        },
+        description: {
+            idAttr: `updateDescription`,
+            label: 'Description',
+            type: `text`,
+            nameAttr: `description`,
+            required: false,
+            placeholder: 'Enter description...',
+        },
+        category: {
+            idAttr: `updateCategory`,
+            label: 'Category',
+            type: `text`,
+            nameAttr: `category`,
+            required: true,
+            placeholder: 'Enter category',
+        },
+    },
+};
