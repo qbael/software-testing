@@ -7,9 +7,9 @@ export function validateFields(fieldName, value, isRequired) {
 
     switch (fieldName) {
         case 'name':
-            return /^[a-zA-Z\s]{4,}$/.test(value)
+            return /^[a-zA-Z0-9._-]{3,50}$/.test(value)
                 ? ''
-                : 'Name should have at least 4 characters and only contain letters and spaces';
+                : 'Name must be 3-50 characters long and can only contain letters, numbers, ".", "-", or "_"';
 
         case 'email':
             return /^\S+@\S+\.\S+$/.test(value) ? '' : 'Invalid email. Example: MinhAnfe23@gmail.com';
@@ -18,9 +18,9 @@ export function validateFields(fieldName, value, isRequired) {
             return /^\d{10,}$/.test(value) ? '' : 'Phone Number must have at least 10 digits';
 
         case 'password':
-            return /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.*\d)[A-Za-z\d!@#$%^&*]{7,}$/.test(value)
+            return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,100}$/.test(value)
                 ? ''
-                : 'Password must have at least 7 characters, 1 special character, 1 uppercase letter, and a number';
+                : 'Password must be 6-100 characters long and contain at least one letter and one number';
         case 'price':
             return /^\d+(\.\d+)?$/.test(value) ? '' : 'Price should have digits only';
         default:

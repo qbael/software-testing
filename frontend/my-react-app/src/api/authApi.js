@@ -9,7 +9,9 @@ export async function login(username, password) {
     return res.data;
 }
 
-export async function register(username, password, verifyPassword) {
+export async function register(username, password, verifyPassword)
+{
+    console.log(`info: ${username},${password},${verifyPassword}`);
     const res = await axiosClient.post("/auth/register", {
         username,
         password,
