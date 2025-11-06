@@ -58,12 +58,12 @@ public class AuthController {
         String username = registerRequestDTO.getUsername();
         String password = registerRequestDTO.getPassword();
         String verifyPassword = registerRequestDTO.getVerifyPassword();
-
+        System.out.println("verify: " + verifyPassword);
         if (Validator.isBlank(username) || Validator.isBlank(password) || Validator.isBlank(verifyPassword)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if (Validator.isValidUsername(username) || Validator.isValidPassword(password)) {
+        if (!Validator.isValidUsername(username) || !Validator.isValidPassword(password)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
