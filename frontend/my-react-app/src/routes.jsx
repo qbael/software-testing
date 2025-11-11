@@ -21,9 +21,9 @@ const routes = [
     {
         path: '/admin',
         element: (
-
-                <ProductPage />
-
+               <ProtectedRoute>
+                   <ProductPage />
+               </ProtectedRoute>
         ),
     },
 ];

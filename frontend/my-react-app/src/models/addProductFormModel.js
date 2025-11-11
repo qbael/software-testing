@@ -1,11 +1,11 @@
 export const addProductModel = {
     formName: 'Thêm sản phẩm',
     model: {
-        product_name: {
+        productName: {
             idAttr: `addProductName`,
             label: 'Product Name',
             type: `text`,
-            nameAttr: `product_name`,
+            nameAttr: `productName`,
             required: true,
             placeholder: 'Enter product name',
         },
@@ -36,10 +36,16 @@ export const addProductModel = {
         category: {
             idAttr: `addCategory`,
             label: 'Category',
-            type: `text`,
+            type: `select`,   // đổi từ text sang select
             nameAttr: `category`,
             required: true,
-            placeholder: 'Enter category',
+            options: [        // giá trị hợp lệ từ enum backend
+                'SMARTPHONE',
+                'LAPTOPS',
+                'HEADPHONES',
+                'CAMERAS'
+            ],
         },
     },
 };
+

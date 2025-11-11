@@ -1,4 +1,5 @@
 export function validateFields(fieldName, value, isRequired) {
+
     if (isRequired) {
         if (!value || value.trim() === '') {
             return 'This field is required';

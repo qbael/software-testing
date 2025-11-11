@@ -6,7 +6,7 @@ import closeIcon from '../../assets/closeIcon.svg';
 
 export default function Form({ formModel, onSubmit, closeIconDisplay = false, toCloseForm, object = null }) {
     const initialDataErrorObj = Object.fromEntries(
-        Object.entries(formModel.model).map(([key]) => [key, { value: '', error: '' }]),
+        Object.entries(formModel.model).map(([key]) => [key, { value: '', error: '' }])
     );
 
     const [DataErrorObj, setDataErrorObj] = useState(initialDataErrorObj);
@@ -16,17 +16,15 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
             const validateData = Object.fromEntries(
                 Object.entries(formModel.model).map(([key, model]) => [
                     key,
-                    { value: `${object ? (object[key] ? object[key] : object[model.matchField]) : ''}`, error: '' },
-                ]),
+                    { value: object[key] ?? object[model.matchField] ?? '', error: '' },
+                ])
             );
             setDataErrorObj(validateData);
         }
     }, [object]);
 
-    const validateSingleField = (key, value) => {
-        let error = validateFields(key, value, formModel.model[key].required);
-        return error;
-    };
+    const validateSingleField = (key, value) => validateFields(key, value, formModel.model[key].required);
+
     const validateMatchingField = (key, value) => {
         const matchField = formModel.model[key].matchField;
         if (matchField && value !== DataErrorObj[matchField].value) {
@@ -40,10 +38,15 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
         const error = validateSingleField(name, value) || validateMatchingField(name, value);
         setDataErrorObj((prev) => ({
             ...prev,
-            [name]: {
-                ...prev[name],
-                error: error,
-            },
+            [name]: { ...prev[name], error },
+        }));
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setDataErrorObj((prev) => ({
+            ...prev,
+            [name]: { ...prev[name], value },
         }));
     };
 
@@ -51,39 +54,22 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
         let formValidity = true;
         const cloneObj = { ...DataErrorObj };
         Object.entries(cloneObj).forEach(([key, model]) => {
-            const value = model.value;
-            model.error = validateSingleField(key, value) || validateMatchingField(key, value);
-            if (model.error !== '') formValidity = false;
+            model.error = validateSingleField(key, String(model.value)) || validateMatchingField(key, String(model.value));
+            if (model.error) formValidity = false;
         });
         setDataErrorObj(cloneObj);
         return formValidity;
     };
 
-    const resetInputVaLue = () => {
-        const cloneObj = { ...DataErrorObj };
-        Object.entries(cloneObj).forEach(([_, model]) => {
-            model.value = '';
-        });
-        setDataErrorObj(cloneObj);
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        const formValidity = checkValidity();
-        if (formValidity) {
-            onSubmit(DataErrorObj);
-            resetInputVaLue();
+        if (checkValidity()) {
+            // Chuyển sang object chỉ chứa value
+            const payload = Object.fromEntries(
+                Object.entries(DataErrorObj).map(([key, val]) => [key, val.value])
+            );
+            onSubmit(payload);
         }
-    };
-
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setDataErrorObj((prev) => ({
-            ...prev,
-            [name]: {
-                value,
-            },
-        }));
     };
 
     return (
@@ -101,7 +87,7 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
                     <div key={key}>
                         <Input
                             onBlur={handleInputBlur}
-                            onChange={(e) => handleInputChange(e)}
+                            onChange={handleInputChange}
                             type={model.type}
                             name={model.nameAttr}
                             value={DataErrorObj[key].value}
@@ -110,6 +96,7 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
                             error={DataErrorObj[key].error}
                             isRequired={model.required}
                             placeholder={model.placeholder}
+                            options={model.options} // thêm cho select
                         />
                     </div>
                 ))}

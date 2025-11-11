@@ -3,30 +3,44 @@ import { useNavigate } from "react-router-dom";
 import { getProducts, createProduct, updateProduct, deleteProduct } from "../../api/productApi";
 import { getCurrentUser, logout } from "../../api/authApi";
 import Form from "../../components/Forms/Forms.jsx";
-import Card from "../../components/Cards/Card.jsx";
 import Header from "../../components/Headers/Header.jsx";
 import { addProductModel } from "../../models/addProductFormModel.js";
 import { updateProductModel } from "../../models/updateProductFormModel.js";
+import ProductList from "./ProductList.jsx";
+import Pagination from "../../components/Paginations/Pagination.jsx";
+import SortControl from "../../components/Sorts/Sort.jsx";
 import styles from "./product.module.css";
 
 export default function ProductManagementPage() {
     const [currentUser, setCurrentUser] = useState(null);
-    const [products, setProducts] = useState([{ id: "1", productName: "Apple iPhone 15", price: 1200, quantity: 10, description: "Newest iPhone with A17 chip", category: "Smartphone", }, { id: "2", productName: "Samsung Galaxy S24", price: 1100, quantity: 15, description: "High-end Android smartphone", category: "Smartphone", }, { id: "3", productName: "MacBook Pro 16", price: 2500, quantity: 5, description: "Powerful laptop for professionals", category: "Laptop", }]);
+    const [products, setProducts] = useState([]);
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
-    const navigate = useNavigate();
+    const [currProduct,setCurrProduct] = useState(null)
+    // 🔹 Thêm state cho phân trang + sort
+    const [page, setPage] = useState(0);
+    const [limit, setLimit] = useState(5);
+    const [totalPages, setTotalPages] = useState(0);
+    const [sortBy, setSortBy] = useState("id");
+    const [sortDir, setSortDir] = useState("asc");
 
+    const navigate = useNavigate();
+    const handleEdit= (p)=>{
+        setEditing(true);
+        setCurrProduct(p);
+
+    }
     // Lấy danh sách sản phẩm từ API
     const fetchProducts = async () => {
         try {
-            const res = await getProducts();
+            const res = await getProducts(page, limit, sortBy, sortDir);
             setProducts(res.data.content || []);
+            setTotalPages(res.data.totalPages);
         } catch (err) {
             console.error("Failed to fetch products:", err);
         }
     };
 
-    // Lấy user hiện tại từ JWT
     const fetchUser = async () => {
         try {
             const user = await getCurrentUser();
@@ -40,57 +54,36 @@ export default function ProductManagementPage() {
     useEffect(() => {
         fetchProducts();
         fetchUser();
-    }, []);
+    }, [page, limit, sortBy, sortDir]); // 🔹 load lại khi thay đổi
 
-    // Thêm sản phẩm
     const handleAdd = async (data) => {
-        try {
-            await createProduct(data);
-            setShowForm(false);
-            fetchProducts();
-        } catch (err) {
-            console.error("Failed to add product:", err);
-        }
+        await createProduct(data);
+        setShowForm(false);
+        fetchProducts();
     };
 
-    // Cập nhật sản phẩm
     const handleUpdate = async (data) => {
-        try {
-            await updateProduct(editing.id, data);
-            setEditing(null);
-            fetchProducts();
-        } catch (err) {
-            console.error("Failed to update product:", err);
-        }
+        await updateProduct(currProduct.id, data);
+        setEditing(null);
+        fetchProducts();
     };
 
-    // Xóa sản phẩm
     const handleDelete = async (id) => {
         if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
-            try {
-                await deleteProduct(id);
-                fetchProducts();
-            } catch (err) {
-                console.error("Failed to delete product:", err);
-            }
+            await deleteProduct(id);
+            fetchProducts();
         }
     };
 
-    // Đóng form
     const closeForm = () => {
         setShowForm(false);
         setEditing(null);
     };
 
-    // Logout
     const handleLogout = async () => {
-        try {
-            await logout();
-            setCurrentUser(null);
-            navigate("/login");
-        } catch (err) {
-            console.error("Logout failed:", err);
-        }
+        await logout();
+        setCurrentUser(null);
+        navigate("/login");
     };
 
     return (
@@ -99,6 +92,8 @@ export default function ProductManagementPage() {
 
             <div className={styles.container}>
                 <h1 className={styles.title}>Quản lý sản phẩm</h1>
+
+                <SortControl sortBy={sortBy} sortDir={sortDir} onChange={(s, d) => { setSortBy(s); setSortDir(d); }} />
 
                 {!showForm && !editing && (
                     <button className={styles.addButton} onClick={() => setShowForm(true)}>
@@ -111,6 +106,7 @@ export default function ProductManagementPage() {
                         <div className={styles.blurLayer}></div>
                         <div className={styles.formWrapper}>
                             <Form
+                                object={editing ? currProduct : null}  // ✅ đúng
                                 toCloseForm={closeForm}
                                 closeIconDisplay={true}
                                 formModel={editing ? updateProductModel : addProductModel}
@@ -120,21 +116,15 @@ export default function ProductManagementPage() {
                     </div>
                 )}
 
-                <div className={styles.cardGrid}>
-                    {products.length === 0 ? (
-                        <p className={styles.empty}>Không có sản phẩm nào.</p>
-                    ) : (
-                        products.map((p) => (
-                            <Card
-                                key={p.id}
-                                product={p}
-                                onEdit={() => setEditing(p)}
-                                onDelete={handleDelete}
-                            />
-                        ))
-                    )}
-                </div>
+                <ProductList
+                    products={products}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                />
+
+                <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
             </div>
         </div>
     );
 }
+
