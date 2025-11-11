@@ -1,5 +1,6 @@
 import {useEffect,useState} from "react";
 import { Navigate } from 'react-router-dom';
+import {getCurrentUser} from "../api/authApi.js";
 
 export default function ProtectedRoute({ children }) {
     const [isLoading, setIsLoading] = useState(true);
@@ -20,5 +21,6 @@ export default function ProtectedRoute({ children }) {
     }, []);
 
     if (isLoading) return <div>Loading...</div>;
-    return isLoggedIn ? children : <Navigate to="/login" />;
+    if (!isLoggedIn) return <Navigate to="/login" replace />;
+    return children;
 }

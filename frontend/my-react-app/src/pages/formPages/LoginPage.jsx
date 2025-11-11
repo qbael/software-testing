@@ -8,13 +8,10 @@ export default function LoginPage() {
     const navigate = useNavigate();
 
     const onSubmit = async (DataErrorObj) => {
-        const loginInfo = Object.fromEntries(
-            Object.entries(DataErrorObj).map(([key, model]) => [key, model.value])
-        );
 
         try {
             // 1️⃣ Gửi request login → backend set cookie JWT
-            await login(loginInfo.name, loginInfo.password);
+            await login(DataErrorObj.name, DataErrorObj.password);
 
             // 2️⃣ Gọi API lấy thông tin user từ cookie JWT
             const user = await getCurrentUser();

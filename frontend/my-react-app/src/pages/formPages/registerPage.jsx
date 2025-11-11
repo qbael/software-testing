@@ -9,20 +9,16 @@ export default function RegisterPage() {
     const navigate = useNavigate();
 
     const onSubmit = async (obj) => {
-        const newAccount = Object.fromEntries(
-            Object.entries(obj).map(([key, { value }]) => [key, value])
-        );
         try {
             const response = await register(
-                newAccount.name,
-                newAccount.password,
-                newAccount.confirmPassword
+                obj.name,
+                obj.password,
+                obj.confirmPassword
             );
             // Nếu axios, lỗi sẽ ném vào catch, không cần check response.ok
             alert('Đăng ký thành công');
             navigate('/login');
         } catch (error) {
-            console.error(error);
             alert('Đăng ký thất bại, thử lại');
             navigate('/register');
         }

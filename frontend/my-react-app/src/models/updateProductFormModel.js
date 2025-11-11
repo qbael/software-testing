@@ -1,16 +1,16 @@
 export const updateProductModel = {
-    formName: 'Cập nhật sản phẩm',
+    formName: 'Cập Nhật Sản Phẩm',
     model: {
-        product_name: {
-            idAttr: `updateProductName`,
+        productName: {
+            idAttr: `addProductName`,
             label: 'Product Name',
             type: `text`,
-            nameAttr: `product_name`,
+            nameAttr: `productName`,
             required: true,
             placeholder: 'Enter product name',
         },
         price: {
-            idAttr: `updatePrice`,
+            idAttr: `addPrice`,
             label: 'Price',
             type: `number`,
             nameAttr: `price`,
@@ -18,7 +18,7 @@ export const updateProductModel = {
             placeholder: 'Enter price',
         },
         quantity: {
-            idAttr: `updateQuantity`,
+            idAttr: `addQuantity`,
             label: 'Quantity',
             type: `number`,
             nameAttr: `quantity`,
@@ -26,7 +26,7 @@ export const updateProductModel = {
             placeholder: 'Enter quantity',
         },
         description: {
-            idAttr: `updateDescription`,
+            idAttr: `addDescription`,
             label: 'Description',
             type: `text`,
             nameAttr: `description`,
@@ -34,12 +34,17 @@ export const updateProductModel = {
             placeholder: 'Enter description...',
         },
         category: {
-            idAttr: `updateCategory`,
+            idAttr: `addCategory`,
             label: 'Category',
-            type: `text`,
+            type: `select`,   // đổi từ text sang select
             nameAttr: `category`,
             required: true,
-            placeholder: 'Enter category',
+            options: [        // giá trị hợp lệ từ enum backend
+                'SMARTPHONE',
+                'LAPTOPS',
+                'HEADPHONES',
+                'CAMERAS'
+            ],
         },
     },
 };
