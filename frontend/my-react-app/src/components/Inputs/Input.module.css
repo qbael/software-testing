@@ -1,0 +1,32 @@
+.inputDiv {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+    margin-top: 8px;
+}
+.inputDiv label {
+    display: block;
+    margin: 5px 0;
+}
+.inputDiv input {
+    width: 100%;
+    border: none;
+    box-shadow: 0px 2px 3px 1px rgb(184, 182, 182);
+    padding: 5px;
+}
+.inputDiv div {
+    display: none;
+}
+
+.inputDiv label,
+.inputDiv input {
+    font-size: clamp(0.4rem, 1.5vw, 0.5rem);
+}
+.inputDiv .error {
+    display: block;
+    color: red;
+    font-size: clamp(0.35rem, 1.2vw, 0.45rem);
+    height: 0.3rem;
+    margin-top: 5px;
+}

@@ -1,0 +1,57 @@
+form {
+    background-color: rgb(255, 255, 255);
+    width: 30vw;
+    max-width: 300px;
+    min-width: 200px;
+    box-shadow: 0 0 8px 1px rgb(128, 123, 123);
+    border-radius: 0.2rem;
+    top:50%;
+    left:50%;
+    position: absolute;
+    z-index:2;
+    transform:translate(-50%,-50%);
+    padding:1rem 2rem;
+}
+
+form h1 {
+    text-align: center;
+    font-size: clamp(0.7rem, 2vw, 1rem);
+}
+.fieldsWrapper {
+    margin: 1rem 0;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+form .fieldsWrapper div {
+    list-style: none;
+    width: 100%;
+}
+
+form button {
+    background-color: rgb(159, 161, 152);
+    font-weight: bold;
+    border: none;
+    padding: 0.2rem 0.6rem;
+    font-size: clamp(0.5rem, 1vw, 0.6rem);
+    display: block;
+    margin: auto;
+    margin-top: 1rem;
+    cursor: pointer;
+}
+.hide {
+    display: none;
+}
+.closeIconDisplay {
+    width: clamp(0.65rem, 1.5vw, 1rem);
+    height: clamp(0.65rem, 1.5vw, 1rem);
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    cursor: pointer;
+}
+.idField {
+    font-size: clamp(0.4rem, 1.5vw, 0.5rem);
+    margin-bottom: 1rem;
+    font-weight: bold;
+}

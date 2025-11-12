@@ -1,0 +1,17 @@
+.loginForm,
+.registerForm {
+    width:100vw;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(194, 192, 192, 0.7);
+}
+.backIcon {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    cursor: pointer;
+}
