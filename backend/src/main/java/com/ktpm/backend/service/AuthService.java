@@ -55,7 +55,8 @@ public class AuthService {
         try {
             userRepository.save(user);
             return true;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return false;
         }
     }

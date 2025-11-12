@@ -72,7 +72,8 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
             return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (UsernameExistedException e) {
+        }
+        catch (UsernameExistedException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (VerifyPasswordNotMatch e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
