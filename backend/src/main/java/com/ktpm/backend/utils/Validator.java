@@ -19,7 +19,7 @@ public class Validator {
     }
 
     public static boolean isValidUsername(String username) {
-        String usernameRegex = "^[a-zA-Z0-9._-]{3,50}$";
+        String usernameRegex = "^[a-zA-Z\\d._-]{3,50}$";
         username = username == null ? null : username.trim();
         return username != null && !username.isEmpty() && username.matches(usernameRegex);
     }

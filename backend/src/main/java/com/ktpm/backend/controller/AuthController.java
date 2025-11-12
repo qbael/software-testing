@@ -67,7 +67,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
-        if (Validator.isValidUsername(username) || Validator.isValidPassword(password)) {
+        if (!Validator.isValidUsername(username) || !Validator.isValidPassword(password)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -77,7 +77,8 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
             return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (UsernameExistedException e) {
+        }
+        catch (UsernameExistedException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (VerifyPasswordNotMatch e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
