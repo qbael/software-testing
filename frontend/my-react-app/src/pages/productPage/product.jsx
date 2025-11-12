@@ -10,12 +10,14 @@ import ProductList from "./productList.jsx";
 import Pagination from "../../components/Paginations/Pagination.jsx";
 import SortControl from "../../components/Sorts/Sort.jsx";
 import styles from "./product.module.css";
+import InfoBoard from "../../components/InfoBoard/InfoBoard.jsx";
 
 export default function ProductManagementPage() {
     const [currentUser, setCurrentUser] = useState(null);
     const [products, setProducts] = useState([]);
     const [editing, setEditing] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [displayBoard,setDisplayBoard] = useState(false)
     const [currProduct,setCurrProduct] = useState(null)
     // 🔹 Thêm state cho phân trang + sort
     const [page, setPage] = useState(0);
@@ -29,6 +31,10 @@ export default function ProductManagementPage() {
         setEditing(true);
         setCurrProduct(p);
 
+    }
+    const handleCheck= (p)=>{
+        setCurrProduct(p);
+        setDisplayBoard(true)
     }
     // Lấy danh sách sản phẩm từ API
     const fetchProducts = async () => {
@@ -59,18 +65,21 @@ export default function ProductManagementPage() {
     const handleAdd = async (data) => {
         await createProduct(data);
         setShowForm(false);
+        alert('Thêm sản phẩm thành công')
         fetchProducts();
     };
 
     const handleUpdate = async (data) => {
         await updateProduct(currProduct.id, data);
         setEditing(null);
+        alert('update sản phẩm thành công')
         fetchProducts();
     };
 
     const handleDelete = async (id) => {
         if (window.confirm("Bạn có chắc muốn xóa sản phẩm này?")) {
             await deleteProduct(id);
+            alert('Xóa sản phẩm thành công')
             fetchProducts();
         }
     };
@@ -89,9 +98,14 @@ export default function ProductManagementPage() {
     return (
         <div>
             <Header username={currentUser?.username} onLogout={handleLogout} />
-
+            {displayBoard ?
+                <div>
+                    <div className={styles.blurLayer}></div>
+                    <InfoBoard onClose={() => setDisplayBoard(false)} product={currProduct}/>
+                </div>
+                : null}
             <div className={styles.container}>
-                <h1 className={styles.title}>Quản lý sản phẩm</h1>
+            <h1 className={styles.title}>Quản lý sản phẩm</h1>
 
                 <SortControl sortBy={sortBy} sortDir={sortDir} onChange={(s, d) => { setSortBy(s); setSortDir(d); }} />
 
@@ -117,6 +131,7 @@ export default function ProductManagementPage() {
                 )}
 
                 <ProductList
+                    onDetailCheck={handleCheck}
                     products={products}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
