@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProducts, createProduct, updateProduct, deleteProduct } from "../../api/productApi";
+import { getProducts, createProduct, updateProduct, deleteProduct } from "../../api/productAPI.js";
 import { getCurrentUser, logout } from "../../api/authApi";
 import Form from "../../components/Forms/Forms.jsx";
 import Header from "../../components/Headers/Header.jsx";
 import { addProductModel } from "../../models/addProductFormModel.js";
 import { updateProductModel } from "../../models/updateProductFormModel.js";
-import ProductList from "./ProductList.jsx";
+import ProductList from "./productList.jsx";
 import Pagination from "../../components/Paginations/Pagination.jsx";
 import SortControl from "../../components/Sorts/Sort.jsx";
 import styles from "./product.module.css";
