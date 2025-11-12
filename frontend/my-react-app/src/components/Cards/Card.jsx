@@ -1,10 +1,14 @@
 import styles from './Card.module.css';
-
-export default function Card({ product, onEdit, onDelete }) {
+import infoIcon from '../../../public/infoIcon.svg'
+export default function Card({ product, onEdit, onDelete,onDetailCheck }) {
     return (
         <div className={styles.card}>
             <div>
-                <h2 className={styles.name}>{product.productName}</h2>
+                <div className={styles.flexContainer}>
+                    <h2 className={styles.name}>{product.productName}</h2>
+                    <img onClick={()=>onDetailCheck(product)} className={styles.icon} src={infoIcon} alt={"icon"}/>
+                </div>
+
                 <p className={styles.price}>
                     💰 <span>{product.price.toLocaleString()}₫</span>
                 </p>
