@@ -9,6 +9,7 @@ services:
       POSTGRES_DB: ktpm
       POSTGRES_USER: root
       POSTGRES_PASSWORD: password
+      TZ: Asia/Ho_Chi_Minh
     volumes:
       - ktpm-db:/var/lib/postgresql
     networks:

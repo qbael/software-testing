@@ -1,0 +1,28 @@
+import styles from './Card.module.css';
+
+export default function Card({ product, onEdit, onDelete }) {
+    return (
+        <div className={styles.card}>
+            <div>
+                <h2 className={styles.name}>{product.productName}</h2>
+                <p className={styles.price}>
+                    💰 <span>{product.price.toLocaleString()}₫</span>
+                </p>
+                <p className={styles.info}>📦 Số lượng: {product.quantity}</p>
+                <p className={styles.info}>🏷 Danh mục: {product.category}</p>
+                {product.description && (
+                    <p className={styles.description}>“{product.description}”</p>
+                )}
+            </div>
+
+            <div className={styles.actions}>
+                <button className={styles.editBtn} onClick={() => onEdit(product)}>
+                    ✏️ Sửa
+                </button>
+                <button className={styles.deleteBtn} onClick={() => onDelete(product.id)}>
+                    🗑 Xóa
+                </button>
+            </div>
+        </div>
+    );
+}
