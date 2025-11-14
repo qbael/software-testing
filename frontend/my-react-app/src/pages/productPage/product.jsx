@@ -63,6 +63,7 @@ export default function ProductManagementPage() {
     }, [page, limit, sortBy, sortDir]); // 🔹 load lại khi thay đổi
 
     const handleAdd = async (data) => {
+        console.log('lf: ',data)
         await createProduct(data);
         setShowForm(false);
         alert('Thêm sản phẩm thành công')

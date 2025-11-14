@@ -66,7 +66,17 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
         if (checkValidity()) {
             // Chuyển sang object chỉ chứa value
             const payload = Object.fromEntries(
-                Object.entries(DataErrorObj).map(([key, val]) => [key, val.value])
+                Object.entries(DataErrorObj).map(([key, val]) => {
+                    let value = val.value;
+
+                    // Ép kiểu number cho các field dạng số
+                    const type = formModel.model[key].type;
+                    if (type === "number") {
+                        value = Number(value);
+                    }
+
+                    return [key, value];
+                })
             );
             onSubmit(payload);
         }
