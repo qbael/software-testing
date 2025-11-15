@@ -1,5 +1,5 @@
-import * as productService from "../../src/api/productAPI.js";
-jest.mock("../../src/api/productAPI.js");
+import * as productService from "../../../src/api/productAPI.js";
+jest.mock("../../../src/api/productAPI.js");
 
 describe('ProductService Mock Tests', () => {
     const mockProduct = {

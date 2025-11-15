@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { render, screen, fireEvent, waitFor,within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ProductList from "../../src/pages/productPage/productList.jsx";
-import InfoBoard from "../../src/components/InfoBoard/InfoBoard.jsx";
+import ProductList from "../../../src/pages/productPage/productList.jsx";
+import InfoBoard from "../../../src/components/InfoBoard/InfoBoard.jsx";
 
 describe("ProductDetail Integration Test", () => {
     const products = [
