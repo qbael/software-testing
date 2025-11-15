@@ -1,13 +1,13 @@
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import ProductManagementPage from "../../src/pages/productPage/product.jsx";
-import * as api from "../../src/api/productAPI.js";
-import * as authApi from "../../src/api/authApi.js";
+import ProductManagementPage from "../../../src/pages/productPage/product.jsx";
+import * as api from "../../../src/api/productAPI.js";
+import * as authApi from "../../../src/api/authApi.js";
 
 
-jest.mock("../../src/api/authApi.js");
-jest.mock("../../src/api/productAPI.js");
+jest.mock("../../../src/api/authApi.js");
+jest.mock("../../../src/api/productAPI.js");
 describe("Integration Test: ProductManagementPage with API → ProductList", () => {
 
     beforeEach(() => {

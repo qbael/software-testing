@@ -1,11 +1,11 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ProductForm from "../../src/components/Forms/Forms.jsx";
-import { addProductModel } from "../../src/models/addProductFormModel.js";
-import { updateProductModel } from "../../src/models/updateProductFormModel.js";
-import * as api from "../../src/api/productAPI.js";
+import ProductForm from "../../../src/components/Forms/Forms.jsx";
+import { addProductModel } from "../../../src/models/addProductFormModel.js";
+import { updateProductModel } from "../../../src/models/updateProductFormModel.js";
+import * as api from "../../../src/api/productAPI.js";
 
-jest.mock("../../src/api/productAPI.js");
+jest.mock("../../../src/api/productAPI.js");
 
 describe("ProductForm Integration Tests", () => {
     const productData = {
