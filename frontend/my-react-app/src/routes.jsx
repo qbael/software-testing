@@ -1,7 +1,7 @@
-import LoginPage from './Pages/formPages/LoginPage.jsx';
-import RegisterPage from './Pages/formPages/RegisterPage.jsx';
-import ProductPage from './Pages/productPage/Product.jsx';
-import ProtectedRoute from './Pages/ProtectedPage.jsx';
+import LoginPage from './pages/formPages/LoginPage.jsx';
+import RegisterPage from './pages/formPages/registerPage.jsx';
+import ProductPage from './pages/productPage/product.jsx';
+import ProtectedRoute from './pages/protectedPage.jsx';
 import HomePage from "./pages/homePage/HomePage.jsx";
 
 

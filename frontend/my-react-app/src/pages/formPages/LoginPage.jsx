@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import backIcon from '../../assets/backIcon.svg'
 import Form from "../../components/Forms/Forms.jsx";
 import {loginFormModel} from "../../models/loginFormModel.js";
+
 export default function LoginPage() {
     const navigate = useNavigate();
 

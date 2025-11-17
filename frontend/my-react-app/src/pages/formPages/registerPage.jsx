@@ -1,7 +1,7 @@
 import Form from "../../components/Forms/Forms.jsx";
 import styles from './formPage.module.css';
 import { useNavigate } from 'react-router-dom';
-import { registerFormModel } from '../../models/RegisterFormModel';
+import { registerFormModel } from '../../models/registerFormModel.js';
 import backIcon from '../../assets/backIcon.svg';
 import { register } from "../../api/authApi.js";
 
