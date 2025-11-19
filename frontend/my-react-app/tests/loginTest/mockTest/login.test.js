@@ -1,4 +1,4 @@
-// LoginPage.test.jsx
+// LoginPage.test.jsx - FIXED VERSION
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -69,13 +69,13 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act: Fill form và submit (dùng exact label text từ HTML)
+            // Act: Fill form với password hợp lệ (6-100 chars, có chữ và số)
             const nameInput = screen.getByLabelText(/^Name/i);
             const passwordInput = screen.getByLabelText(/^Password/i);
             const submitButton = screen.getByRole('button', { name: /đăng nhập/i });
 
             await user.type(nameInput, 'validuser');
-            await user.type(passwordInput, 'ValidPass123');
+            await user.type(passwordInput, 'ValidPass123'); // ✅ Valid: có chữ và số
             await user.click(submitButton);
 
             // Assert: Verify successful flow
@@ -95,15 +95,15 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use simple alphanumeric password (no special chars)
             await user.type(screen.getByLabelText(/^Name/i), 'admin');
-            await user.type(screen.getByLabelText(/^Password/i), 'Admin@123');
+            await user.type(screen.getByLabelText(/^Password/i), 'Admin123'); // ✅ No special chars
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Verify API được gọi với đúng tham số
             await waitFor(() => {
                 expect(authApi.login).toHaveBeenCalledTimes(1);
-                expect(authApi.login).toHaveBeenCalledWith('admin', 'Admin@123');
+                expect(authApi.login).toHaveBeenCalledWith('admin', 'Admin123');
             });
         });
     });
@@ -122,9 +122,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password format
             await user.type(screen.getByLabelText(/^Name/i), 'nonexistentuser');
-            await user.type(screen.getByLabelText(/^Password/i), 'SomePass123');
+            await user.type(screen.getByLabelText(/^Password/i), 'SomePass123'); // ✅ Valid
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Verify error handling
@@ -148,9 +148,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password format (still wrong for user, but passes validation)
             await user.type(screen.getByLabelText(/^Name/i), 'validuser');
-            await user.type(screen.getByLabelText(/^Password/i), 'WrongPassword');
+            await user.type(screen.getByLabelText(/^Password/i), 'WrongPass123'); // ✅ Valid format
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert
@@ -171,9 +171,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password
             await user.type(screen.getByLabelText(/^Name/i), 'testuser');
-            await user.type(screen.getByLabelText(/^Password/i), 'Pass123');
+            await user.type(screen.getByLabelText(/^Password/i), 'Pass1234'); // ✅ Valid
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Should show default error message
@@ -196,9 +196,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password
             await user.type(screen.getByLabelText(/^Name/i), 'user');
-            await user.type(screen.getByLabelText(/^Password/i), 'Pass');
+            await user.type(screen.getByLabelText(/^Password/i), 'Pass123'); // ✅ Valid: 7 chars, has letters and numbers
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert
@@ -220,9 +220,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password
             await user.type(screen.getByLabelText(/^Name/i), 'user');
-            await user.type(screen.getByLabelText(/^Password/i), 'password');
+            await user.type(screen.getByLabelText(/^Password/i), 'password123'); // ✅ Valid
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Verify số lần gọi
@@ -239,9 +239,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password
             await user.type(screen.getByLabelText(/^Name/i), 'admin');
-            await user.type(screen.getByLabelText(/^Password/i), 'admin123');
+            await user.type(screen.getByLabelText(/^Password/i), 'admin123'); // ✅ Valid
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Verify call sequence
@@ -252,9 +252,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
         });
 
         test('should verify mock call arguments are correct', async () => {
-            // Arrange
+            // Arrange - Use simple alphanumeric passwords
             const expectedUsername = 'testuser123';
-            const expectedPassword = 'SecurePass456!';
+            const expectedPassword = 'SecurePass456'; // ✅ No special chars
 
             authApi.login.mockResolvedValue({ id: '3', username: expectedUsername });
             authApi.getCurrentUser.mockResolvedValue({ id: '3', username: expectedUsername });
@@ -284,9 +284,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password format
             await user.type(screen.getByLabelText(/^Name/i), 'wronguser');
-            await user.type(screen.getByLabelText(/^Password/i), 'wrongpass');
+            await user.type(screen.getByLabelText(/^Password/i), 'wrongpass123'); // ✅ Valid format
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: getCurrentUser should NOT be called on login failure
@@ -304,9 +304,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password
             await user.type(screen.getByLabelText(/^Name/i), 'nav-test');
-            await user.type(screen.getByLabelText(/^Password/i), 'pass123');
+            await user.type(screen.getByLabelText(/^Password/i), 'pass123'); // ✅ Valid
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Verify navigate được gọi với '/admin'
@@ -324,9 +324,9 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
-            // Act
+            // Act - Use valid password
             await user.type(screen.getByLabelText(/^Name/i), 'alert-test');
-            await user.type(screen.getByLabelText(/^Password/i), 'pass456');
+            await user.type(screen.getByLabelText(/^Password/i), 'pass456'); // ✅ Valid
             await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
 
             // Assert: Verify alert message
