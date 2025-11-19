@@ -11,22 +11,15 @@ export default function LoginPage() {
     const onSubmit = async (DataErrorObj) => {
 
         try {
-            // 1️⃣ Gửi request login → backend set cookie JWT
             await login(DataErrorObj.name, DataErrorObj.password);
 
-            // 2️⃣ Gọi API lấy thông tin user từ cookie JWT
             const user = await getCurrentUser();
 
-            alert('Login successfully!');
+            alert('Đăng nhập thành công!');
             navigate('/admin');
         } catch (err) {
-            if (err.response?.status === 401) {
-                alert('Username or password incorrect');
-            } else if (err.response?.status === 400) {
-                alert('Invalid input');
-            } else {
-                alert('Server error, please try again later');
-            }
+            const msg = err.response?.data || 'Đăng ký thất bại. Vui lòng thử lại.'
+            alert(msg)
         }
     };
 

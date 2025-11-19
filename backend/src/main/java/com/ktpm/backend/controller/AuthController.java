@@ -3,6 +3,7 @@ package com.ktpm.backend.controller;
 import com.ktpm.backend.dto.LoginRequestDTO;
 import com.ktpm.backend.dto.LoginResponseDTO;
 import com.ktpm.backend.dto.RegisterRequestDTO;
+import com.ktpm.backend.exception.UserNotFoundException;
 import com.ktpm.backend.exception.UsernameExistedException;
 import com.ktpm.backend.exception.VerifyPasswordNotMatch;
 import com.ktpm.backend.exception.WrongPassWordException;
@@ -25,7 +26,7 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> authenticate(
+    public ResponseEntity<?> authenticate(
             @RequestBody LoginRequestDTO loginRequestDTO,
             HttpServletResponse response
     ) {
@@ -47,8 +48,12 @@ public class AuthController {
             response.addCookie(cookie);
 
             return ResponseEntity.ok(loginResponseDTO);
-        } catch (UsernameNotFoundException | WrongPassWordException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        catch (WrongPassWordException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
