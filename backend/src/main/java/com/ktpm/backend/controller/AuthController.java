@@ -3,6 +3,7 @@ package com.ktpm.backend.controller;
 import com.ktpm.backend.dto.LoginRequestDTO;
 import com.ktpm.backend.dto.LoginResponseDTO;
 import com.ktpm.backend.dto.RegisterRequestDTO;
+import com.ktpm.backend.exception.UserNotFoundException;
 import com.ktpm.backend.exception.UsernameExistedException;
 import com.ktpm.backend.exception.VerifyPasswordNotMatch;
 import com.ktpm.backend.exception.WrongPassWordException;
@@ -14,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,7 +47,7 @@ public class AuthController {
             response.addCookie(cookie);
 
             return ResponseEntity.ok(loginResponseDTO);
-        } catch (UsernameNotFoundException | WrongPassWordException e) {
+        } catch (UserNotFoundException | WrongPassWordException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
@@ -57,7 +57,6 @@ public class AuthController {
         String username = registerRequestDTO.getUsername();
         String password = registerRequestDTO.getPassword();
         String verifyPassword = registerRequestDTO.getVerifyPassword();
-        System.out.println("verify: " + verifyPassword);
         if (Validator.isBlank(username) || Validator.isBlank(password) || Validator.isBlank(verifyPassword)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
