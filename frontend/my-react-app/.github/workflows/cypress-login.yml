@@ -2,9 +2,9 @@ name: Cypress Login E2E Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, minhthoai ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, minhthoai ]
 
 jobs:
   cypress-run:
