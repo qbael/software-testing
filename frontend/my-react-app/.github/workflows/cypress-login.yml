@@ -2,9 +2,10 @@ name: Cypress Login E2E Tests
 
 on:
   push:
-    branches: [ main, minhthoai ]
+    branches: [main, minhthoai]
   pull_request:
-    branches: [ main, minhthoai ]
+    branches: [main, minhthoai]
+  workflow_dispatch:
 
 jobs:
   cypress-run:
@@ -26,11 +27,6 @@ jobs:
         uses: cypress-io/github-action@v5
         with:
           browser: chrome
-          headless: true
           record: false
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: cypress-test-report
-          path: cypress/results
+        env:
+          CYPRESS_HEADLESS: true   # <-- thay vì headless: true
