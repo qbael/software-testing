@@ -18,7 +18,7 @@ export default function InfoBoard({ product, onClose }) {
     }, [onClose]);
 
     return (
-        <div className={styles.overlay}>
+        <div data-testid="productDetail" className={styles.overlay}>
             <div ref={boardRef} className={styles.board}>
                 <h2 className={styles.title}>Chi tiết sản phẩm</h2>
                 <div className={styles.row}><span className={styles.label}>Tên:</span> <span className={styles.value}>{p.productName ?? '-'}</span></div>

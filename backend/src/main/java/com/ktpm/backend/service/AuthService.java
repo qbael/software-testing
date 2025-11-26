@@ -9,10 +9,12 @@ import com.ktpm.backend.exception.VerifyPasswordNotMatch;
 import com.ktpm.backend.exception.WrongPassWordException;
 import com.ktpm.backend.repository.UserRepository;
 import com.ktpm.backend.utils.JwtUtil;
+import com.ktpm.backend.utils.Validator;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,7 +24,11 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    public LoginResponseDTO loginUser(String username, String password) {
+    public LoginResponseDTO authenticate(String username, String password) {
+        if (!Validator.isValidUsername(username) || !Validator.isValidPassword(password)) {
+            throw new IllegalArgumentException("Username hoặc mật khẩu không hợp lệ");
+        }
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Không tìm thấy người dùng"));
 
