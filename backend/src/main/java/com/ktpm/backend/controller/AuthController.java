@@ -15,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,12 +31,9 @@ public class AuthController {
     ) {
         String username = loginRequestDTO.getUsername();
         String password = loginRequestDTO.getPassword();
-        if (!Validator.isValidUsername(username) || !Validator.isValidPassword(password)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
 
         try {
-            LoginResponseDTO loginResponseDTO = authService.loginUser(username, password);
+            LoginResponseDTO loginResponseDTO = authService.authenticate(username, password);
             String token = jwtUtil.generateToken(loginResponseDTO.getId(), loginResponseDTO.getUsername());
 
             Cookie cookie = new Cookie("jwt", token);
@@ -48,6 +44,9 @@ public class AuthController {
             response.addCookie(cookie);
 
             return ResponseEntity.ok(loginResponseDTO);
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
