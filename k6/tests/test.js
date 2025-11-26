@@ -28,8 +28,8 @@ export default function () {
 
 export function handleSummary(data) {
     return {
-        "summary.html": htmlReport(data),
-        "summary.json": JSON.stringify(data),
+        "../summary.html": htmlReport(data),
+        "../summary.json": JSON.stringify(data),
         stdout: textSummary(data, { indent: " ", enableColors: true }),
     };
 }
