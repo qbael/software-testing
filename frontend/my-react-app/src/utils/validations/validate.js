@@ -11,7 +11,7 @@ export function validateFields(fieldName, value, isRequired) {
             return /^[a-zA-Z0-9._-]{3,50}$/.test(value)
                 ? ''
                 : 'Name must be 3-50 characters long and can only contain letters, numbers, ".", "-", or "_"';
-
+v
         case 'email':
             return /^\S+@\S+\.\S+$/.test(value) ? '' : 'Invalid email. Example: MinhAnfe23@gmail.com';
 

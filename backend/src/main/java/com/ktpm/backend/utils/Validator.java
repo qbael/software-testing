@@ -12,12 +12,6 @@ public class Validator {
         return str == null || str.isBlank();
     }
 
-    public static boolean isSizeInRange(String str, int min, int max) {
-        if (str == null) return false;
-        int length = str.length();
-        return length >= min && length <= max;
-    }
-
     public static boolean isValidUsername(String username) {
         String usernameRegex = "^[a-zA-Z0-9._-]{3,50}$";
         boolean isNullOrBlank = isBlank(username);
@@ -28,6 +22,12 @@ public class Validator {
         String passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,100}$";
         boolean isNullOrBlank = isBlank(password);
         return !isNullOrBlank && password.matches(passwordRegex);
+    }
+
+    public static boolean isSizeInRange(String str, int min, int max) {
+        if (str == null) return false;
+        int length = str.length();
+        return length >= min && length <= max;
     }
 
     public static boolean isValidProduct(Product product) {

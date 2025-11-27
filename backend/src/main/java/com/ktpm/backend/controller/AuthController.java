@@ -25,18 +25,15 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> authenticate(
+    public ResponseEntity<?> authenticate(
             @RequestBody LoginRequestDTO loginRequestDTO,
             HttpServletResponse response
     ) {
         String username = loginRequestDTO.getUsername();
         String password = loginRequestDTO.getPassword();
-        if (!Validator.isValidUsername(username) || !Validator.isValidPassword(password)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
 
         try {
-            LoginResponseDTO loginResponseDTO = authService.loginUser(username, password);
+            LoginResponseDTO loginResponseDTO = authService.authenticate(username, password);
             String token = jwtUtil.generateToken(loginResponseDTO.getId(), loginResponseDTO.getUsername());
 
             Cookie cookie = new Cookie("jwt", token);
@@ -47,8 +44,15 @@ public class AuthController {
             response.addCookie(cookie);
 
             return ResponseEntity.ok(loginResponseDTO);
-        } catch (UserNotFoundException | WrongPassWordException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        catch (WrongPassWordException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
@@ -57,6 +61,7 @@ public class AuthController {
         String username = registerRequestDTO.getUsername();
         String password = registerRequestDTO.getPassword();
         String verifyPassword = registerRequestDTO.getVerifyPassword();
+        System.out.println("verify: " + verifyPassword);
         if (Validator.isBlank(username) || Validator.isBlank(password) || Validator.isBlank(verifyPassword)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
