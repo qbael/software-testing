@@ -17,7 +17,11 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     public Page<Product> getAll(Pageable pageable) {
-        return productRepository.findAll(pageable);
+        try {
+            return productRepository.findAll(pageable);
+        } catch (Exception e) {
+            throw new RuntimeException("Lỗi khi lấy danh sách sản phẩm");
+        }
     }
 
     public Optional<Product> getProduct(UUID id) {

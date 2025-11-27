@@ -38,9 +38,12 @@ public class ProductController {
         Pageable pageable = PageRequest.of(page, limit, Sort.by(
                 sortDir.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy
         ));
-        Page<Product> products = productService.getAll(pageable);
-
-        return ResponseEntity.ok(products);
+        try {
+            Page<Product> products = productService.getAll(pageable);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping("/{id}")
@@ -67,8 +70,11 @@ public class ProductController {
         if (!Validator.isValidProduct(product)) {
             return ResponseEntity.badRequest().build();
         }
+
+        Product sanitizedProduct = Validator.sanitizeProduct(product);
+
         try {
-            Product createdProduct = productService.createProduct(product);
+            Product createdProduct = productService.createProduct(sanitizedProduct);
             return ResponseEntity.ok(createdProduct);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -83,8 +89,11 @@ public class ProductController {
         if (!Validator.isValidProduct(product)) {
             return ResponseEntity.badRequest().build();
         }
+
+        Product sanitizedProduct = Validator.sanitizeProduct(product);
+
         try {
-            Product updatedProduct = productService.updateProduct(id, product);
+            Product updatedProduct = productService.updateProduct(id, sanitizedProduct);
             return ResponseEntity.ok(updatedProduct);
         } catch (ProductNotFoundException e) {
             return ResponseEntity.notFound().build();
