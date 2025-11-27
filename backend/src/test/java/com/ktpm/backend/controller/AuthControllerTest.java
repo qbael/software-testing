@@ -67,17 +67,17 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(userId.toString()))
                 .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(cookie().exists("jwt"))
-                .andExpect(cookie().httpOnly("jwt", true))
-                .andExpect(cookie().secure("jwt", true))
-                .andExpect(cookie().path("jwt", "/"))
-                .andExpect(cookie().maxAge("jwt", 24 * 60 * 60 * 3))
+                .andExpect(cookie().exists("token"))
+                .andExpect(cookie().httpOnly("token", true))
+                .andExpect(cookie().secure("token", true))
+                .andExpect(cookie().path("token", "/"))
+                .andExpect(cookie().maxAge("token", 24 * 60 * 60 * 3))
                 .andReturn();
 
         verify(authService, times(1)).authenticate("testuser", "Password123");
         verify(jwtUtil, times(1)).generateToken(userId, "testuser");
 
-        Cookie jwtCookie = result.getResponse().getCookie("jwt");
+        Cookie jwtCookie = result.getResponse().getCookie("token");
         assertThat(jwtCookie).isNotNull();
         assertThat(jwtCookie.getValue()).isEqualTo(mockToken);
     }
@@ -151,7 +151,7 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Sai mật khẩu"))
-                .andExpect(cookie().doesNotExist("jwt"));
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate("testuser", "WrongPass123");
         verify(jwtUtil, never()).generateToken(any(UUID.class), anyString());
@@ -172,5 +172,22 @@ class AuthControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(authService, times(1)).authenticate(isNull(), eq("Password123"));
+    }
+
+    @Test
+    void testLogin_NullPassword_ReturnsBadRequest() throws Exception {
+        LoginRequestDTO loginRequest = new LoginRequestDTO();
+        loginRequest.setUsername("testuser");
+        loginRequest.setPassword(null);
+
+        when(authService.authenticate("testuser", null))
+                .thenThrow(new IllegalArgumentException("Username hoặc mật khẩu không hợp lệ"));
+
+        mockMvc.perform(post("/api/auth/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isBadRequest());
+
+        verify(authService, times(1)).authenticate(eq("testuser"), isNull());
     }
 }

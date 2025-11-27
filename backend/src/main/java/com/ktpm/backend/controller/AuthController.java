@@ -38,7 +38,7 @@ public class AuthController {
 
             Cookie cookie = new Cookie("token", token);
             cookie.setHttpOnly(true);
-            cookie.setSecure(false);
+            cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(24 * 60 * 60 * 3);
             response.addCookie(cookie);
@@ -61,6 +61,7 @@ public class AuthController {
         String username = registerRequestDTO.getUsername();
         String password = registerRequestDTO.getPassword();
         String verifyPassword = registerRequestDTO.getVerifyPassword();
+
         if (Validator.isBlank(username) || Validator.isBlank(password) || Validator.isBlank(verifyPassword)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
