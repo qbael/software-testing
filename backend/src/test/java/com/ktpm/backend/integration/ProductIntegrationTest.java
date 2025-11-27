@@ -16,6 +16,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -67,6 +68,51 @@ class ProductIntegrationTest {
 
     @Test
     @Order(3)
+    @DisplayName("INTEGRATION - Lấy tất cả sản phẩm")
+    void getAllProducts_ContainsCreatedProduct() throws Exception {
+        mockMvc.perform(get("/api/products"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$[*].id", hasItem(createdId.toString())))
+                .andExpect(jsonPath("$[*].productName", hasItem("Test Integration Product")));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("INTEGRATION - Cập nhật sản phẩm")
+    void updateProduct_AfterCreate() throws Exception {
+        Product updateProduct = Product.builder()
+                .id(createdId)
+                .productName("Updated Integration Product")
+                .price(1999)
+                .quantity(199)
+                .description("This product has been updated")
+                .category(Category.LAPTOPS)
+                .build();
+
+        mockMvc.perform(put("/api/products/{id}", createdId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateProduct)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productName").value("Updated Integration Product"))
+                .andExpect(jsonPath("$.price").value(1999))
+                .andExpect(jsonPath("$.quantity").value(199))
+                .andExpect(jsonPath("$.description").value("This product has been updated"))
+                .andExpect(jsonPath("$.category").value("LAPTOP"));
+    }
+
+    @Test
+    @Order(5)
+    @DisplayName("INTEGRATION - Xác nhận sản phẩm đã được cập nhật")
+    void getProductById_AfterUpdate() throws Exception {
+        mockMvc.perform(get("/api/products/{id}", createdId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.productName").value("Updated Integration Product"))
+                .andExpect(jsonPath("$.price").value(1999));
+    }
+
+    @Test
+    @Order(6)
     @DisplayName("INTEGRATION - Xóa sản phẩm")
     void deleteProduct_AfterCreate() throws Exception {
         mockMvc.perform(delete("/api/products/{id}", createdId))
