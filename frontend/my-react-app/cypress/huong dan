@@ -1,1 +1,2 @@
-npx cypress run.
+npx cypress run
+npx cypress run --spec "cypress/e2e/product.cy.js"

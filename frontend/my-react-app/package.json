@@ -25,6 +25,8 @@
     "@babel/core": "^7.28.5",
     "@babel/preset-env": "^7.28.5",
     "@babel/preset-react": "^7.28.5",
+    "@cypress/react": "^9.0.1",
+    "@cypress/webpack-dev-server": "^5.2.1",
     "@eslint/js": "^9.36.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",

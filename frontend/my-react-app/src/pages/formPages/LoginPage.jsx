@@ -18,7 +18,7 @@ export default function LoginPage() {
             const user = await getCurrentUser();
 
             alert('Login successfully!');
-            navigate('/admin');
+            navigate("/admin");
         } catch (err) {
             if (err.response?.status === 401) {
                 alert('Username or password incorrect');
