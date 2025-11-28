@@ -183,7 +183,6 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             authApi.login.mockRejectedValue({
                 response: { status: 401, data: 'Unauthorized' }
             });
-
             const user = userEvent.setup();
             renderWithRouter(<LoginPage />);
 
