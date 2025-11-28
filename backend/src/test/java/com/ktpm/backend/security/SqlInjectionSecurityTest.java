@@ -7,6 +7,7 @@ import com.ktpm.backend.dto.RegisterRequestDTO;
 import com.ktpm.backend.entity.Product;
 import com.ktpm.backend.entity.enums.Category;
 import jakarta.servlet.http.Cookie;
+import org.aspectj.weaver.patterns.IToken;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -128,5 +129,10 @@ public class SqlInjectionSecurityTest {
                         .param("sortBy", "id; DROP TABLE products;--")
                         .param("sortDir", "asc"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @AfterEach
+    void tearDown() {
+        token = null;
     }
 }

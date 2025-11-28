@@ -2,7 +2,7 @@ POST localhost:8080/api/auth/register
 Content-Type: application/json
 
 {
-  "username": "testuser123",
-  "password": "testuser123",
-  "verifyPassword": "testuser123"
+  "username": "mindang1",
+  "password": "mindang1",
+  "verifyPassword": "mindang1"
 }

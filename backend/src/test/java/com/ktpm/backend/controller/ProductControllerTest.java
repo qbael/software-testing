@@ -4,9 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktpm.backend.entity.Product;
 import com.ktpm.backend.entity.enums.Category;
 import com.ktpm.backend.exception.ProductNotFoundException;
+import com.ktpm.backend.filter.JwtAuthFilter;
 import com.ktpm.backend.service.ProductService;
-import org.junit.jupiter.api.*;
+import com.ktpm.backend.utils.JwtUtil;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.*;
@@ -20,21 +25,25 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(ProductController.class)
 @DisplayName("ProductController API Tests")
 class ProductControllerTest {
 
     @Autowired private MockMvc mockMvc;
     @MockBean private ProductService productService;
+    @MockBean private JwtUtil jwtUtil;
+    @MockBean private JwtAuthFilter jwtAuthFilter;
     @Autowired private ObjectMapper objectMapper;
 
     private Product product;
     private UUID id;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         id = UUID.randomUUID();
         product = Product.builder()
                 .id(id)
