@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Import(SecurityConfig.class)
 @DisplayName("Security Test - XSS Prevention")
-public class XSSSecurityTest {
+public class XssSecurityTest {
 
     @Autowired
     private MockMvc mockMvc;

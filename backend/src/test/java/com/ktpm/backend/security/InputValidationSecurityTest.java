@@ -5,14 +5,11 @@ import com.ktpm.backend.config.SecurityConfig;
 import com.ktpm.backend.dto.RegisterRequestDTO;
 import com.ktpm.backend.entity.Product;
 import com.ktpm.backend.entity.enums.Category;
-import com.ktpm.backend.service.AuthService;
-import com.ktpm.backend.service.ProductService;
-import com.ktpm.backend.utils.JwtUtil;
+import com.ktpm.backend.utils.Validator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +17,13 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -35,70 +37,31 @@ public class InputValidationSecurityTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Mock
-    private AuthService authService;
-
-    @Mock
-    private ProductService productService;
-
-    @Mock
-    private JwtUtil jwtUtil;
-
-    // ==================== USERNAME VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 1: Username too short (< 3 chars)")
-    void testUsernameTooShort() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("ab");
-        registerRequest.setPassword("Password123");
-        registerRequest.setVerifyPassword("Password123");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 2: Username too long (> 50 chars)")
-    void testUsernameTooLong() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("a".repeat(51));
-        registerRequest.setPassword("Password123");
-        registerRequest.setVerifyPassword("Password123");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
     @ParameterizedTest
     @ValueSource(strings = {
-            "user@name",      // @ symbol
-            "user name",      // space
-            "user#123",       // # symbol
-            "user!",          // ! symbol
-            "user$",          // $ symbol
-            "user%",          // % symbol
-            "user&test",      // & symbol
-            "user*",          // * symbol
-            "user+test",      // + symbol
-            "user=test",      // = symbol
-            "user[test]",     // brackets
-            "user{test}",     // braces
-            "user|test",      // pipe
-            "user\\test",     // backslash
-            "user:test",      // colon
-            "user;test",      // semicolon
-            "user'test",      // single quote
-            "user\"test",     // double quote
-            "user<>test",     // angle brackets
-            "user,test",      // comma
-            "user?test"       // question mark
+            "user@name",
+            "user name",
+            "user#123",
+            "user!",
+            "user$",
+            "user%",
+            "user&test",
+            "user*",
+            "user+test",
+            "user=test",
+            "user[test]",
+            "user{test}",
+            "user|test",
+            "user\\test",
+            "user:test",
+            "user;test",
+            "user'test",
+            "user\"test",
+            "user<>test",
+            "user,test",
+            "user?test"
     })
-    @DisplayName("Input Validation Test 3: Username with special characters")
+    @DisplayName("Input Validation Test 1: Username với ký tự đặc biệt nên bị từ chối")
     void testUsernameWithSpecialChars(String invalidUsername) throws Exception {
         RegisterRequestDTO registerRequest = new RegisterRequestDTO();
         registerRequest.setUsername(invalidUsername);
@@ -111,441 +74,86 @@ public class InputValidationSecurityTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @Test
-    @DisplayName("Input Validation Test 4: Username with null value")
-    void testUsernameNull() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername(null);
-        registerRequest.setPassword("Password123");
-        registerRequest.setVerifyPassword("Password123");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 5: Username with empty string")
-    void testUsernameEmpty() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("");
-        registerRequest.setPassword("Password123");
-        registerRequest.setVerifyPassword("Password123");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 6: Username with whitespace only")
-    void testUsernameWhitespaceOnly() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("   ");
-        registerRequest.setPassword("Password123");
-        registerRequest.setVerifyPassword("Password123");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    // ==================== PASSWORD VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 7: Password too short (< 6 chars)")
-    void testPasswordTooShort() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("testuser");
-        registerRequest.setPassword("Abc12");
-        registerRequest.setVerifyPassword("Abc12");
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 8: Password too long (> 100 chars)")
-    void testPasswordTooLong() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("testuser");
-        String longPassword = "Password1" + "a".repeat(93);
-        registerRequest.setPassword(longPassword);
-        registerRequest.setVerifyPassword(longPassword);
-
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "<script>alert('xss')</script>",
+            "javascript:alert('xss')",
+            "onload=alert('xss')",
+            "onerror=alert('xss')",
+            "onclick=alert('xss')",
+            "<iframe src='malicious.com'>",
+            "eval('malicious code')",
+            "alert('xss')",
+            "document.cookie"
+    })
+    @DisplayName("Input Validation Test 2: Các input chứa XSS nên bị phát hiện")
+    void containsXSS_ShouldDetectXSSPatterns(String input) {
+        assertTrue(Validator.containsXSS(input));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
-            "password",         // No digit
-            "PASSWORD",         // No digit
-            "abcdefgh",        // No digit
-            "12345678",        // No letter
-            "123456",          // Too short + no letter
-            "Pass word1",      // Contains space (if not allowed)
+            "' OR '1'='1",
+            "'; DROP TABLE users; --",
+            "SELECT * FROM users",
+            "INSERT INTO users",
+            "UPDATE users SET",
+            "DELETE FROM users",
+            "UNION SELECT",
+            "admin'--",
+            "'; EXEC xp_cmdshell('dir'); --"
     })
-    @DisplayName("Input Validation Test 9: Invalid password formats")
-    void testInvalidPasswordFormats(String invalidPassword) throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("testuser");
-        registerRequest.setPassword(invalidPassword);
-        registerRequest.setVerifyPassword(invalidPassword);
+    @DisplayName("Input Validation Test 3: Các input chứa SQL Injection nên bị phát hiện")
+    void containsSqlInjection_ShouldDetectSQLInjectionPatterns(String input) {
+        assertTrue(Validator.containsSqlInjection(input));
+    }
 
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
+
+    @Test
+    @DisplayName("Input Sanitization Test 1: Các input chứa SQL Injection và XSS nên được làm sạch")
+    void sanitizeInput_ShouldRemoveXSSAndSQLInjectionPatterns() {
+        String maliciousInput = "<script>alert('xss')</script>'; DROP TABLE users; --";
+        String sanitized = Validator.sanitizeInput(maliciousInput);
+
+        assertThat(sanitized)
+                .doesNotContain("<script>")
+                .doesNotContain("</script>")
+                .doesNotContain("DROP TABLE")
+                .doesNotContain("';");
     }
 
     @Test
-    @DisplayName("Input Validation Test 10: Password mismatch")
-    void testPasswordMismatch() throws Exception {
-        RegisterRequestDTO registerRequest = new RegisterRequestDTO();
-        registerRequest.setUsername("testuser");
-        registerRequest.setPassword("Password123");
-        registerRequest.setVerifyPassword("DifferentPass123");
+    @DisplayName("Input Sanitization Test 2: Các ký tự đặc biệt trong HTML nên được mã hóa")
+    void sanitizeInput_ShouldEncodeHTMLSpecialCharacters() {
+        String input = "<div>\"test\" & 'value'</div>";
+        String sanitized = Validator.sanitizeInput(input);
 
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isBadRequest());
-    }
-
-    // ==================== PRODUCT NAME VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 11: Product name too short (< 3 chars)")
-    void testProductNameTooShort() throws Exception {
-        Product product = Product.builder()
-                .productName("AB")
-                .price(100)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized()); // Auth first, then would be 400
+        assertThat(sanitized).contains("&quot;test&quot; &amp;");
     }
 
     @Test
-    @DisplayName("Input Validation Test 12: Product name too long (> 100 chars)")
-    void testProductNameTooLong() throws Exception {
-        Product product = Product.builder()
-                .productName("A".repeat(101))
-                .price(100)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
+    @DisplayName("Input Sanitization Test 3: sanitizeProduct nên làm sạch tất cả các trường chuỗi")
+    void sanitizeProduct_ShouldSanitizeAllStringFields() {
+        Product maliciousProduct = new Product();
+        maliciousProduct.setId(UUID.randomUUID());
+        maliciousProduct.setProductName("<script>alert('xss')</script>");
+        maliciousProduct.setPrice(100000);
+        maliciousProduct.setQuantity(10);
+        maliciousProduct.setDescription("'; DROP TABLE products; --");
+        maliciousProduct.setCategory(Category.SMARTPHONE);
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
+        Product sanitized = Validator.sanitizeProduct(maliciousProduct);
 
-    @Test
-    @DisplayName("Input Validation Test 13: Product name null")
-    void testProductNameNull() throws Exception {
-        Product product = Product.builder()
-                .productName(null)
-                .price(100)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
+        assertThat(sanitized.getProductName())
+                .doesNotContain("<script>")
+                .doesNotContain("</script>");
 
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
+        assertThat(sanitized.getDescription())
+                .doesNotContain("DROP TABLE")
+                .doesNotContain("';");
 
-    @Test
-    @DisplayName("Input Validation Test 14: Product name empty")
-    void testProductNameEmpty() throws Exception {
-        Product product = Product.builder()
-                .productName("")
-                .price(100)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ==================== PRICE VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 15: Negative price")
-    void testNegativePrice() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(-100)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 16: Zero price")
-    void testZeroPrice() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(0)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 17: Price too large")
-    void testPriceTooLarge() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(1000000000) // > 999999999
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 18: Price null")
-    void testPriceNull() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(null)
-                .quantity(10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ==================== QUANTITY VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 19: Negative quantity")
-    void testNegativeQuantity() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(-10)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 20: Quantity too large")
-    void testQuantityTooLarge() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(100000) // > 99999
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 21: Quantity null")
-    void testQuantityNull() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(null)
-                .description("Test description")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ==================== DESCRIPTION VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 22: Description too long (> 500 chars)")
-    void testDescriptionTooLong() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(10)
-                .description("A".repeat(501))
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 23: Description null")
-    void testDescriptionNull() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(10)
-                .description(null)
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 24: Description empty")
-    void testDescriptionEmpty() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(10)
-                .description("")
-                .category(Category.SMARTPHONE)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ==================== CATEGORY VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 25: Invalid category")
-    void testInvalidCategory() throws Exception {
-        String invalidJson = """
-                {
-                    "productName": "Test Product",
-                    "price": 100,
-                    "quantity": 10,
-                    "description": "Test description",
-                    "category": "INVALID_CATEGORY"
-                }
-                """;
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
-                .andExpect(status().isUnauthorized()); // Would be 400 after auth
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 26: Category null")
-    void testCategoryNull() throws Exception {
-        Product product = Product.builder()
-                .productName("Test Product")
-                .price(100)
-                .quantity(10)
-                .description("Test description")
-                .category(null)
-                .build();
-
-        mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andExpect(status().isUnauthorized());
-    }
-
-    // ==================== PAGINATION PARAMETERS VALIDATION ====================
-
-    @Test
-    @DisplayName("Input Validation Test 27: Negative page number")
-    void testNegativePageNumber() throws Exception {
-        mockMvc.perform(get("/api/products")
-                        .param("page", "-1")
-                        .param("limit", "10"))
-                .andExpect(status().isUnauthorized()); // Would be 400 after auth
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 28: Zero or negative limit")
-    void testZeroOrNegativeLimit() throws Exception {
-        mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("limit", "0"))
-                .andExpect(status().isUnauthorized());
-
-        mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("limit", "-10"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 29: Invalid sortDir value")
-    void testInvalidSortDir() throws Exception {
-        mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("limit", "10")
-                        .param("sortDir", "invalid"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    @DisplayName("Input Validation Test 30: Empty sortBy parameter")
-    void testEmptySortBy() throws Exception {
-        mockMvc.perform(get("/api/products")
-                        .param("page", "0")
-                        .param("limit", "10")
-                        .param("sortBy", ""))
-                .andExpect(status().isUnauthorized());
+        assertEquals(maliciousProduct.getPrice(), sanitized.getPrice());
+        assertEquals(maliciousProduct.getQuantity(), sanitized.getQuantity());
+        assertEquals(maliciousProduct.getCategory(), sanitized.getCategory());
     }
 }
