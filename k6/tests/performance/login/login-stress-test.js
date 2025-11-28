@@ -13,31 +13,19 @@ const scenarioRequests = new Counter('scenario_requests');
 
 export const options = {
     scenarios: {
-        load_100_users: {
-            executor: 'constant-vus',
-            vus: 100,
-            duration: '1m',
+        stress_test: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '1m', target: 1000 },
+                { duration: '1m', target: 1500 },
+                { duration: '1m', target: 2000 },
+                { duration: '1m', target: 2500 },
+                { duration: '1m', target: 0 },
+            ],
             startTime: '0s',
-            tags: {test_type: 'load_100', scenario_name: 'load_100_users'},
-            gracefulStop: '30s',
-        },
-
-        load_500_users: {
-            executor: 'constant-vus',
-            vus: 500,
-            duration: '1m',
-            startTime: '1.5m',
-            tags: {test_type: 'load_500', scenario_name: 'load_500_users'},
-            gracefulStop: '30s',
-        },
-
-        load_1000_users: {
-            executor: 'constant-vus',
-            vus: 1000,
-            duration: '1m',
-            startTime: '3m',
-            tags: {test_type: 'load_1000', scenario_name: 'load_1000_users'},
-            gracefulStop: '30s',
+            tags: { test_type: 'stress', scenario_name: 'stress_test' },
+            gracefulRampDown: '30s',
         },
     },
 
@@ -49,14 +37,14 @@ export const options = {
         'scenario_requests{scenario_name:stress_test}': ['count>0'],
     },
 
-    setupTimeout: '4m',
+    setupTimeout: '3m',
 };
 
 const BASE_URL = 'http://localhost:8080';
 
 export function setup() {
     const users = [];
-    const userCount = 2500;
+    const userCount = 2000;
 
     for (let i = 1; i <= userCount; i++) {
         const user = {
