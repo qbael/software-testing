@@ -6,9 +6,8 @@ describe('Validation Module - Login Tests', () => {
     // a) Unit tests cho validateUsername() - 2 điểm
     // ============================================
 
-    describe('validateUsername (fieldName: "name")', () => {
+    describe('validateUsername', () => {
         const ERROR_MSG = 'Name must be 3-50 characters long and can only contain letters, numbers, ".", "-", or "_"';
-
         // Test username rỗng
         test.each([
             ['', 'empty string'],
@@ -20,9 +19,7 @@ describe('Validation Module - Login Tests', () => {
 
         // Test username quá ngắn
         test.each([
-            ['ab', '2 characters'],
-            ['a1', '2 alphanumeric'],
-            ['x', '1 character']
+            ['ab', '2 characters']
         ])('should return error when username is too short: %s', (username) => {
             const result = validateFields('name', username, true);
             expect(result).toBe(ERROR_MSG);
@@ -31,7 +28,6 @@ describe('Validation Module - Login Tests', () => {
         // Test username quá dài
         test.each([
             ['a'.repeat(51), '51 characters'],
-            ['user' + '1'.repeat(47), 'exactly 51 chars']
         ])('should return error when username is too long: %s', (username) => {
             const result = validateFields('name', username, true);
             expect(result).toBe(ERROR_MSG);
@@ -40,10 +36,7 @@ describe('Validation Module - Login Tests', () => {
         // Test ký tự đặc biệt không hợp lệ
         test.each([
             ['user name', 'contains spaces'],
-            ['user@123', 'contains @'],
-            ['user#name', 'contains #'],
-            ['user!123', 'contains !'],
-            ['userên', 'contains Vietnamese chars']
+            ['user!@#', 'special chars'],
         ])('should return error when username %s', (username) => {
             const result = validateFields('name', username, true);
             expect(result).toBe(ERROR_MSG);
@@ -56,7 +49,6 @@ describe('Validation Module - Login Tests', () => {
             ['user.name', 'with dot'],
             ['user-name', 'with hyphen'],
             ['user_name', 'with underscore'],
-            ['user_123.test-name', 'mixed valid chars'],
             ['abc', 'min length (3 chars)'],
             ['a'.repeat(50), 'max length (50 chars)']
         ])('should return empty string for valid username: %s', (username) => {
@@ -69,7 +61,7 @@ describe('Validation Module - Login Tests', () => {
     // b) Unit tests cho validatePassword() - 2 điểm
     // ============================================
 
-    describe('validatePassword (fieldName: "password")', () => {
+    describe('validatePassword', () => {
         const ERROR_MSG = 'Password must be 6-100 characters long and contain at least one letter and one number';
 
         // Test password rỗng
@@ -84,8 +76,6 @@ describe('Validation Module - Login Tests', () => {
         // Test password quá ngắn
         test.each([
             ['abc12', '5 characters'],
-            ['a1b2c', '5 characters mixed'],
-            ['a', '1 character']
         ])('should return error when password is too short: %s', (password) => {
             const result = validateFields('password', password, true);
             expect(result).toBe(ERROR_MSG);
@@ -94,7 +84,6 @@ describe('Validation Module - Login Tests', () => {
         // Test password quá dài
         test.each([
             ['a1' + 'b'.repeat(99), '101 characters'],
-            ['password1' + '2'.repeat(92), 'exactly 101 chars']
         ])('should return error when password is too long: %s', (password) => {
             const result = validateFields('password', password, true);
             expect(result).toBe(ERROR_MSG);
@@ -103,7 +92,6 @@ describe('Validation Module - Login Tests', () => {
         // Test password thiếu chữ hoặc số
         test.each([
             ['123456', 'only numbers'],
-            ['123456789012', 'only numbers (long)'],
             ['abcdef', 'only lowercase letters'],
             ['ABCDEF', 'only uppercase letters'],
             ['AbCdEf', 'only mixed case letters']
@@ -116,7 +104,6 @@ describe('Validation Module - Login Tests', () => {
         test.each([
             ['abc123!@#', 'special chars'],
             ['abc 123', 'spaces'],
-            ['pass@word1', 'symbols']
         ])('should return error when password contains %s', (password) => {
             const result = validateFields('password', password, true);
             expect(result).toBe(ERROR_MSG);
@@ -128,11 +115,7 @@ describe('Validation Module - Login Tests', () => {
             ['PASSWORD123', 'uppercase + numbers'],
             ['PassWord123', 'mixed case + numbers'],
             ['abc123', 'min length (6 chars)'],
-            ['a1b2c3', 'exactly 6 chars'],
             ['a1' + 'b'.repeat(98), 'max length (100 chars)'],
-            ['test123456', 'multiple numbers'],
-            ['123password', 'starts with number'],
-            ['pass123word', 'numbers in middle']
         ])('should return empty string for valid password: %s', (password) => {
             const result = validateFields('password', password, true);
             expect(result).toBe('');

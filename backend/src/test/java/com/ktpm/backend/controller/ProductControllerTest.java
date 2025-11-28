@@ -63,7 +63,7 @@ class ProductControllerTest {
                 .andExpect(jsonPath("$.content[0].productName").value("MacBook Pro"))
                 .andExpect(jsonPath("$.totalElements").value(1));
 
-        verify(productService).getAll(any(Pageable.unpaged());
+        verify(productService).getAll(any(Pageable.class));
     }
 
     @Test

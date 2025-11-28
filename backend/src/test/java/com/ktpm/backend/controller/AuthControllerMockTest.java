@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
-class AuthControllerTest {
+class AuthControllerMockTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,7 +45,7 @@ class AuthControllerTest {
     // ==================== LOGIN TESTS ====================
 
     @Test
-    void testLogin_Success() throws Exception {
+    void testLoginSuccess() throws Exception {
         // Arrange
         UUID userId = UUID.randomUUID();
         LoginRequestDTO loginRequest = new LoginRequestDTO();
@@ -83,7 +83,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLogin_InvalidUsername_ReturnsBadRequest() throws Exception {
+    void testLoginInvalidUsernameReturnsBadRequest() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
         loginRequest.setUsername("ab");
         loginRequest.setPassword("Password123");
@@ -101,7 +101,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLogin_InvalidPassword_ReturnsBadRequest() throws Exception {
+    void testLoginInvalidPasswordReturnsBadRequest() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
         loginRequest.setUsername("testuser");
         loginRequest.setPassword("12345");
@@ -119,7 +119,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLogin_UserNotFound_ReturnsNotFound() throws Exception {
+    void testLoginUserNotFoundReturnsNotFound() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
         loginRequest.setUsername("nonexistent");
         loginRequest.setPassword("Password123");
@@ -138,7 +138,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLogin_WrongPassword_ReturnsUnauthorized() throws Exception {
+    void testLoginWrongPasswordReturnsUnauthorized() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
         loginRequest.setUsername("testuser");
         loginRequest.setPassword("WrongPass123");
@@ -158,7 +158,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLogin_NullUsername_ReturnsBadRequest() throws Exception {
+    void testLoginNullUsernameReturnsBadRequest() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
         loginRequest.setUsername(null);
         loginRequest.setPassword("Password123");
@@ -175,7 +175,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testLogin_NullPassword_ReturnsBadRequest() throws Exception {
+    void testLoginNullPasswordReturnsBadRequest() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
         loginRequest.setUsername("testuser");
         loginRequest.setPassword(null);
