@@ -1,1 +1,256 @@
-GET localhost:8080/api/products/45d634ea-947e-4820-8024-4a6b89c59274
+@host = localhost:8080
+@contentType = application/json
+
+### ============================================
+### AUTHENTICATION
+### ============================================
+
+### 1. Register new user
+POST http://{{host}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "username": "mindang123",
+  "password": "mindang123",
+  "verifyPassword": "mindang123"
+}
+
+### 2. Login
+POST http://{{host}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "username": "mindang123",
+  "password": "mindang123"
+}
+
+> {%
+    client.test("Login successful", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    var cookies = response.headers.valuesOf("Set-Cookie");
+    if (cookies.length > 0) {
+        var jwtCookie = cookies.find(c => c.startsWith("token="));
+        if (jwtCookie) {
+            var token = jwtCookie.split(";")[0].split("=")[1];
+            client.global.set("jwt_token", token);
+            client.log("JWT Token saved: " + token);
+        }
+    }
+%}
+
+### 3. Get current user (requires login)
+GET http://{{host}}/api/auth/current
+Cookie: jwt={{jwt_token}}
+
+### 4. Logout
+POST http://{{host}}/api/auth/logout
+Cookie: jwt={{jwt_token}}
+
+
+### ============================================
+### PRODUCTS - READ
+### ============================================
+
+### 5. Get all products (default pagination)
+GET http://{{host}}/api/products
+Cookie: jwt={{jwt_token}}
+
+### 6. Get all products with pagination (page 0, limit 10)
+GET http://{{host}}/api/products?page=0&limit=10
+Cookie: jwt={{jwt_token}}
+
+### 7. Get products with sorting (by name, ascending)
+GET http://{{host}}/api/products?page=0&limit=10&sortBy=productName&sortDir=asc
+Cookie: jwt={{jwt_token}}
+
+### 8. Get products sorted by price (descending)
+GET http://{{host}}/api/products?page=0&limit=10&sortBy=price&sortDir=desc
+Cookie: jwt={{jwt_token}}
+
+### 9. Get products page 2 with 20 items
+GET http://{{host}}/api/products?page=1&limit=20&sortBy=id&sortDir=asc
+Cookie: jwt={{jwt_token}}
+
+### 10. Get product by ID
+GET http://{{host}}/api/products/45d634ea-947e-4820-8024-4a6b89c59274
+Cookie: jwt={{jwt_token}}
+
+> {%
+    client.test("Get product by ID", function() {
+        client.assert(response.status === 200 || response.status === 404, "Unexpected status");
+        if (response.status === 200) {
+            client.assert(response.body.id !== undefined, "Product ID is missing");
+            client.log("Product found: " + response.body.productName);
+        }
+    });
+%}
+
+### ============================================
+### PRODUCTS - CREATE
+### ============================================
+
+### 11. Create new product - Smartphone
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "iPhone 15 Pro Max",
+  "price": 1299,
+  "quantity": 50,
+  "description": "Latest iPhone with A17 Pro chip, titanium design, and advanced camera system",
+  "category": "SMARTPHONE"
+}
+
+> {%
+    client.test("Create product successful", function() {
+        client.assert(response.status === 200, "Failed to create product");
+        if (response.status === 200) {
+            client.global.set("created_product_id", response.body.id);
+            client.log("Created product ID: " + response.body.id);
+        }
+    });
+%}
+
+### 12. Create new product - Laptop
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "MacBook Pro 16-inch M3 Max",
+  "price": 2499,
+  "quantity": 30,
+  "description": "Powerful laptop with M3 Max chip, 36GB RAM, 1TB SSD, perfect for professionals",
+  "category": "LAPTOPS"
+}
+
+### 13. Create new product - Headphones
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "Sony WH-1000XM5",
+  "price": 399,
+  "quantity": 100,
+  "description": "Industry-leading noise canceling headphones with exceptional sound quality",
+  "category": "HEADPHONES"
+}
+
+### 14. Create new product - Camera
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "Canon EOS R5",
+  "price": 3899,
+  "quantity": 15,
+  "description": "Professional mirrorless camera with 45MP sensor and 8K video recording",
+  "category": "CAMERAS"
+}
+
+
+### ============================================
+### PRODUCTS - UPDATE
+### ============================================
+
+### 15. Update product (use created_product_id from previous request)
+PUT http://{{host}}/api/products/{{created_product_id}}
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "iPhone 15 Pro Max - Updated",
+  "price": 1199,
+  "quantity": 45,
+  "description": "Updated: Latest iPhone with A17 Pro chip, now with special discount!",
+  "category": "SMARTPHONE"
+}
+
+### 16. Update specific product by ID
+PUT http://{{host}}/api/products/45d634ea-947e-4820-8024-4a6b89c59274
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "Updated Product Name",
+  "price": 999,
+  "quantity": 25,
+  "description": "This product has been updated with new information and pricing",
+  "category": "LAPTOPS"
+}
+
+### ============================================
+### PRODUCTS - DELETE
+### ============================================
+
+### 17. Delete product by ID
+DELETE http://{{host}}/api/products/{{created_product_id}}
+Cookie: jwt={{jwt_token}}
+
+### 18. Delete specific product
+DELETE http://{{host}}/api/products/45d634ea-947e-4820-8024-4a6b89c59274
+Cookie: jwt={{jwt_token}}
+
+### ============================================
+### PRODUCTS - CREATE MULTIPLE
+### ============================================
+
+### 19. Create multiple products in sequence
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "Samsung Galaxy S24 Ultra",
+  "price": 1199,
+  "quantity": 40,
+  "description": "Flagship Android smartphone with S Pen and advanced camera",
+  "category": "SMARTPHONE"
+}
+
+###
+
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "Dell XPS 15",
+  "price": 1899,
+  "quantity": 25,
+  "description": "Premium Windows laptop with stunning display",
+  "category": "LAPTOPS"
+}
+
+###
+
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "AirPods Pro 2nd Gen",
+  "price": 249,
+  "quantity": 150,
+  "description": "Active noise cancellation with adaptive transparency",
+  "category": "HEADPHONES"
+}
+
+###
+
+POST http://{{host}}/api/products
+Content-Type: {{contentType}}
+Cookie: jwt={{jwt_token}}
+
+{
+  "productName": "Nikon Z9",
+  "price": 5499,
+  "quantity": 8,
+  "description": "Professional flagship mirrorless camera",
+  "category": "CAMERAS"
+}

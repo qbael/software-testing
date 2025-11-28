@@ -36,7 +36,7 @@ public class AuthController {
             LoginResponseDTO loginResponseDTO = authService.authenticate(username, password);
             String token = jwtUtil.generateToken(loginResponseDTO.getId(), loginResponseDTO.getUsername());
 
-            Cookie cookie = new Cookie("jwt", token);
+            Cookie cookie = new Cookie("token", token);
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
@@ -61,7 +61,7 @@ public class AuthController {
         String username = registerRequestDTO.getUsername();
         String password = registerRequestDTO.getPassword();
         String verifyPassword = registerRequestDTO.getVerifyPassword();
-        System.out.println("verify: " + verifyPassword);
+
         if (Validator.isBlank(username) || Validator.isBlank(password) || Validator.isBlank(verifyPassword)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -86,7 +86,7 @@ public class AuthController {
 
     @GetMapping("/current")
     public ResponseEntity<LoginResponseDTO> getCurrentUser(
-            @CookieValue(value = "jwt", required = false) String token) {
+            @CookieValue(value = "token", required = false) String token) {
         if (token == null || token.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -100,12 +100,22 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("jwt", "");
+        Cookie cookie = new Cookie("token", "");
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAccount(@PathVariable("id") String id) {
+        try {
+            authService.deleteUserById(id);
+            return ResponseEntity.ok().build();
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

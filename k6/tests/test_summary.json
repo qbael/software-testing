@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-11-26T17:57:53.256Z",
+  "total_requests": 1304,
+  "scenarios": {
+    "load_100_users": 0,
+    "load_500_users": 0,
+    "load_1000_users": 0,
+    "stress_test": 0
+  },
+  "duration": {
+    "total": null,
+    "setup": 0,
+    "teardown": 0
+  }
+}

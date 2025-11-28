@@ -29,6 +29,9 @@ public class AuthService {
             throw new IllegalArgumentException("Username hoặc mật khẩu không hợp lệ");
         }
 
+        username = Validator.sanitizeInput(username);
+        password = Validator.sanitizeInput(password);
+
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("Không tìm thấy người dùng"));
 
@@ -65,5 +68,11 @@ public class AuthService {
         catch (Exception e) {
             return false;
         }
+    }
+
+    public void deleteUserById(String id) {
+        User user = userRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new UserNotFoundException("Không tìm thấy người dùng"));
+        userRepository.delete(user);
     }
 }
