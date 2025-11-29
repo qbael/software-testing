@@ -41,35 +41,27 @@ describe("Login E2E Test", () => {
         });
     });
 
-    // ==== Test input rỗng / validation messages ====
     it("Username required validation", () => {
         loginPage.visit();
-        loginPage.typePassword("123456"); // không nhập username
+        loginPage.typePassword("123456");
         loginPage.clickLogin();
 
-        cy.get('div._error_1el5m_26') // selector từ DevTools
+        cy.get('div._error_1el5m_26')
             .should('contain.text', 'This field is required');
     });
 
     it("Password required validation", () => {
         loginPage.visit();
-        loginPage.typeUsername("mindang1"); // không nhập password
+        loginPage.typeUsername("mindang1");
         loginPage.clickLogin();
 
-        cy.get('div._error_1el5m_26') // selector từ DevTools
+        cy.get('div._error_1el5m_26')
             .should('contain.text', 'This field is required');
     });
-// ==== UI elements interaction (1 test đơn giản) ====
+
     it("UI elements interactions - simple", () => {
         loginPage.visit();
         loginPage.usernameInput().focus().should('be.focused');
         loginPage.passwordInput().focus().should('be.focused');
     });
-
-
-
-
-
-
-
 });

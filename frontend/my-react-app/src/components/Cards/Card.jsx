@@ -5,7 +5,7 @@ export default function Card({ product, onEdit, onDelete,onDetailCheck }) {
         <div className={styles.card}>
             <div>
                 <div className={styles.flexContainer}>
-                    <h2 className={styles.name} data-testid="product-name">{product.name}</h2>
+                    <h2 className={styles.name} data-testid="product-name">{product.productName}</h2>
                     <img onClick={()=>onDetailCheck(product)} className={styles.icon} src={infoIcon} alt={"icon"}/>
                 </div>
 

@@ -8,25 +8,21 @@ describe("Product E2E Test", () => {
     ];
 
     beforeEach(() => {
-        // Giả lập user đã đăng nhập
         window.localStorage.setItem(
             "user",
             JSON.stringify({ id: 1, username: "mindang1", role: "admin" })
         );
 
-        // Mock current user
         cy.intercept("GET", "/api/auth/current", {
             statusCode: 200,
             body: { id: 1, username: "mindang1", role: "admin" },
         }).as("getUser");
 
-        // Mock danh sách sản phẩm
         cy.intercept("GET", "/api/products*", {
             statusCode: 200,
             body: { content: mockProducts, totalPages: 1 },
         }).as("getProducts");
 
-        // Mock create
         cy.intercept("POST", "/api/products", (req) => {
             req.reply({
                 statusCode: 201,
@@ -34,12 +30,10 @@ describe("Product E2E Test", () => {
             });
         }).as("createProduct");
 
-        // Mock update
         cy.intercept("PUT", "/api/products/*", (req) => {
             req.reply({ statusCode: 200, body: req.body });
         }).as("updateProduct");
 
-        // Mock delete
         cy.intercept("DELETE", "/api/products/*", { statusCode: 200 }).as("deleteProduct");
     });
 
@@ -99,33 +93,27 @@ describe("Product E2E Test", () => {
 
         cy.wait("@getProducts");
 
-        // Chọn sort theo price, giảm dần
-        cy.get('[data-testid="sort-by"]').select("price"); // giả sử select field có testid
-        cy.get('[data-testid="sort-dir"]').select("desc"); // giả sử select field có testid
+        cy.get('[data-testid="sort-by"]').select("price");
+        cy.get('[data-testid="sort-dir"]').select("desc");
 
-        // Kiểm tra sản phẩm đầu tiên là sản phẩm có giá cao nhất
         cy.get('[data-testid="product-item"]')
             .first()
             .should("contain.text", "iPhone 99");
 
-        // Kiểm tra sản phẩm cuối cùng là sản phẩm có giá thấp nhất
         cy.get('[data-testid="product-item"]')
             .last()
             .should("contain.text", "Xiaomi Note");
     });
-
 
     it("Xóa sản phẩm thành công", () => {
         page.visit();
         cy.wait("@getUser");
         cy.wait("@getProducts");
 
-        // click delete
         page.deleteProduct("ao");
 
         cy.wait("@deleteProduct");
 
-        // reload hoặc mock lại GET products trống
         cy.intercept("GET", "/api/products*", {
             statusCode: 200,
             body: { content: [], totalPages: 0 },
