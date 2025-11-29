@@ -126,7 +126,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
 
             // Assert
             await waitFor(() => {
-                expect(global.alert).toHaveBeenCalledWith('Đăng ký thất bại. Vui lòng thử lại.');
+                expect(global.alert).toHaveBeenCalledWith('Đăng nhập thất bại. Vui lòng thử lại.');
             });
         });
     });
