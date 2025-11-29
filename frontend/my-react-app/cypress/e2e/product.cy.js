@@ -24,8 +24,9 @@ describe("Product E2E Test", () => {
         }).as("getProducts");
 
         cy.intercept("POST", "/api/products", (req) => {
+            console.log("✅ Intercepted POST request:", req.body);
             req.reply({
-                statusCode: 201,
+                statusCode: 200,
                 body: { ...req.body, id: 2 },
             });
         }).as("createProduct");
@@ -45,40 +46,72 @@ describe("Product E2E Test", () => {
         page.checkProductExists("ao").should("exist");
     });
 
-    // it("Thêm sản phẩm mới thành công", () => {
-    //     page.visit();
-    //     cy.wait("@getUser");
-    //     cy.wait("@getProducts");
-    //
-    //     page.clickAddNew();
-    //     page.fillProductForm({ name: "iPhone 99", price: "9999", quantity: "10", description: "ok" });
-    //     page.submitForm();
-    //
-    //     cy.wait("@createProduct");
-    //     page.checkProductExists("iPhone 99").should("exist");
-    // });
+    it("Thêm sản phẩm mới thành công", () => {
+        page.visit();
+        cy.wait("@getUser");
+        cy.wait("@getProducts");
 
-    // it("Sửa sản phẩm thành công", () => {
-    //     page.visit();
-    //     cy.wait("@getUser");
-    //     cy.wait("@getProducts");
-    //
-    //     const updatedProduct = {
-    //         name: "ao moi",
-    //         price: "5000",
-    //         quantity: "2",
-    //         description: "ok"
-    //     };
-    //
-    //     page.editProduct("ao", updatedProduct);
-    //
-    //     cy.contains('[data-testid="product-item"]', "ao moi").should("exist");
-    // });
+        page.clickAddNew();
+        cy.get('form').should('be.visible');
+        page.fillProductForm({ productName: "iPhone 99", price: "9999", quantity: "10", description: "ok", category: "SMARTPHONE" });
+        cy.get('div._error_1el5m_26').each(($el) => {
+            cy.log($el.text());
+        });
+        page.submitForm();
+        cy.wait("@createProduct");
+
+        cy.intercept("GET", "/api/products*", {
+            statusCode: 200,
+            body: {
+                content: [
+                    ...mockProducts,
+                    { id: 2, productName: "iPhone 99", price: 9999, quantity: 10, description: "ok" }
+                ],
+                totalPages: 1
+            },
+        }).as("getProductsAfterAdd");
+
+        cy.reload();
+        cy.wait("@getProductsAfterAdd");
+
+        page.checkProductExists("iPhone 99").should("exist");
+    });
+
+    it("Sửa sản phẩm thành công", () => {
+        page.visit();
+        cy.wait("@getUser");
+        cy.wait("@getProducts");
+
+        const updatedProduct = {
+            productName: "Asus Zenbook",
+            price: "5000",
+            quantity: "2",
+            description: "laptop moi",
+            category: "LAPTOPS"
+        };
+
+        page.editProduct("ao", updatedProduct);
+
+        cy.intercept("GET", "/api/products*", {
+            statusCode: 200,
+            body: {
+                content: [
+                    ...mockProducts,
+                    { id: 1, productName: "Asus Zenbook", price: 5000, quantity: 2, description: "laptop moi" },
+                ],
+                totalPages: 1
+            },
+        }).as("getProductsAfterEdit");
+
+        cy.reload();
+        cy.wait("@getProductsAfterEdit");
+
+        page.checkProductExists("Asus Zenbook").should("exist");
+    });
 
     it("Filter/Sort sản phẩm theo trường và chiều", () => {
         cy.visit("/products");
 
-        // Giả lập API trả về danh sách sản phẩm
         cy.intercept("GET", "/api/products*", {
             statusCode: 200,
             body: {

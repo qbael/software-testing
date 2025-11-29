@@ -1,0 +1,123 @@
+#name: Cypress Login E2E Tests
+#
+#on:
+#  push:
+#    branches: ["main", "minhthoai", "qbao"]
+#  pull_request:
+#    branches: ["main", "minhthoai", "qbao"]
+#  workflow_dispatch:
+#
+#jobs:
+#  cypress-run:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v4
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: 22
+#          cache: "npm"
+#          cache-dependency-path: frontend/my-react-app/package-lock.json
+#
+#      - name: Install dependencies
+#        working-directory: ./frontend/my-react-app
+#        run: npm ci
+#
+#      - name: Run Cypress tests
+#        uses: cypress-io/github-action@v6
+#        with:
+#          working-directory: ./frontend/my-react-app
+#          start: npm run dev
+#          wait-on: "http://localhost:3000"
+#          browser: chrome
+#        env:
+#          CYPRESS_HEADLESS: true
+name: CI
+
+on:
+  push:
+    branches: [ main, qbao ]
+  pull_request:
+
+jobs:
+  cypress-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ktpm
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: frontend/my-react-app/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend/my-react-app
+        run: npm ci
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: ./mvnw clean package -DskipTests
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Start Backend with Environment
+        working-directory: ./backend
+        run: java -jar target/*.jar &
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ktpm
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: password
+
+      - name: Start Frontend Server
+        working-directory: ./frontend/my-react-app
+        run: npm run dev
+
+      - name: Wait for Backend
+        run: npx wait-on http://localhost:8080 --timeout 60000
+
+      - name: Wait for Frontend
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./frontend/my-react-app
+          browser: chrome
+          wait-on: "http://localhost:3000"
+          wait-on-timeout: 120
+        env:
+          CYPRESS_BASE_URL: http://localhost:3000
+          CYPRESS_API_URL: http://localhost:8080
