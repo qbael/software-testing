@@ -107,11 +107,11 @@ jobs:
         working-directory: ./frontend/my-react-app
         run: npm run dev &
 
-      - name: Wait for Backend
-        run: npx wait-on http://localhost:8080 --timeout 60000
-
-      - name: Wait for Frontend
-        run: npx wait-on http://localhost:3000 --timeout 60000
+#      - name: Wait for Backend
+#        run: npx wait-on http://localhost:8080 --timeout 60000
+#
+#      - name: Wait for Frontend
+#        run: npx wait-on http://localhost:3000 --timeout 60000
 
       - name: Run Cypress Tests
         uses: cypress-io/github-action@v6
