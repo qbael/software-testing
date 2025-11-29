@@ -63,6 +63,8 @@ class AuthServiceUnitTest {
             // Arrange
             validatorMock.when(() -> Validator.isValidUsername(testUsername)).thenReturn(true);
             validatorMock.when(() -> Validator.isValidPassword(testPassword)).thenReturn(true);
+            validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
+            validatorMock.when(() -> Validator.sanitizeInput(testPassword)).thenReturn(testPassword);
             when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches(testPassword, encodedPassword)).thenReturn(true);
 
@@ -81,11 +83,13 @@ class AuthServiceUnitTest {
     @Test
     @DisplayName("Login thất bại - Username không tồn tại")
     void loginUserUsernameNotFound() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
+        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class, CALLS_REAL_METHODS)) {
             // Arrange
             String nonExistentUsername = "nonexistent";
             validatorMock.when(() -> Validator.isValidUsername(nonExistentUsername)).thenReturn(true);
             validatorMock.when(() -> Validator.isValidPassword(testPassword)).thenReturn(true);
+            validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
+            validatorMock.when(() -> Validator.sanitizeInput(testPassword)).thenReturn(testPassword);
             when(userRepository.findByUsername(nonExistentUsername)).thenReturn(Optional.empty());
 
             // Act & Assert
@@ -103,11 +107,15 @@ class AuthServiceUnitTest {
     @Test
     @DisplayName("Login thất bại - Password sai")
     void loginUserWrongPassword() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
+        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class, CALLS_REAL_METHODS)) {
             // Arrange
-            String wrongPassword = "WrongPassword123";
+            String wrongPassword = "WrongPass123";
+
             validatorMock.when(() -> Validator.isValidUsername(testUsername)).thenReturn(true);
             validatorMock.when(() -> Validator.isValidPassword(wrongPassword)).thenReturn(true);
+            validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
+            validatorMock.when(() -> Validator.sanitizeInput(wrongPassword)).thenReturn(wrongPassword);
+
             when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches(wrongPassword, encodedPassword)).thenReturn(false);
 

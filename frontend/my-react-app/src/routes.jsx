@@ -26,6 +26,14 @@ const routes = [
                </ProtectedRoute>
         ),
     },
+    {
+        path: '/products',
+        element: (
+            <ProtectedRoute>
+                <ProductPage /> {/* Hoặc CustomerProductPage nếu bạn muốn tách admin/khách */}
+            </ProtectedRoute>
+        ),
+    }
 ];
 
 export default routes;
