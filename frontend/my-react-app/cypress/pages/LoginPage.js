@@ -1,6 +1,5 @@
 
 class LoginPage {
-
     visit() {
         cy.visit("/login");
     }
@@ -28,8 +27,6 @@ class LoginPage {
     submitButton() {
         return cy.get('button[type="submit"]');
     }
-
-
 }
 
 module.exports = new LoginPage();

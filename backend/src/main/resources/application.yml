@@ -3,7 +3,7 @@ spring:
     name: ktpm-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/ktpm
+    url: jdbc:postgresql://localhost:5433/ktpm
     username: root
     password: password
     driver-class-name: org.postgresql.Driver

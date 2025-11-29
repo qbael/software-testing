@@ -40,8 +40,8 @@
     "eslint-plugin-react-refresh": "^0.4.22",
     "globals": "^16.4.0",
     "jest-environment-jsdom": "^30.2.0",
-    "mochawesome": "^7.1.4",
     "jsdom": "^27.2.0",
+    "mochawesome": "^7.1.4",
     "vite": "^7.1.7",
     "vitest": "^4.0.10"
   }

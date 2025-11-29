@@ -65,11 +65,4 @@ describe("Login E2E Test", () => {
         loginPage.usernameInput().focus().should('be.focused');
         loginPage.passwordInput().focus().should('be.focused');
     });
-
-
-
-
-
-
-
 });
