@@ -15,13 +15,13 @@ class LoginPage {
     clickLogin() {
         cy.get('button[type="submit"]').click();
     }
-    // LoginPage.js
+
     usernameInput() {
-        return cy.get('input[name="name"]');  // hoặc cy.get('#name') hoặc cy.get('input[placeholder="Enter Your Name"]')
+        return cy.get('input[name="name"]');
     }
 
     passwordInput() {
-        return cy.get('input[name="password"]');  // tương tự check HTML
+        return cy.get('input[name="password"]');
     }
 
     submitButton() {

@@ -21,9 +21,11 @@ export default function LoginPage() {
             navigate('/admin');
         } catch (err) {
             if (err.response?.status === 401) {
-                alert('Username or password incorrect');
+                alert('Tên đăng nhập hoặc mật khẩu không đúng');
             } else if (err.response?.status === 400) {
                 alert('Invalid input');
+            } else if (err.response?.status === 404) {
+                alert('Không tìm thấy người dùng');
             } else {
                 alert('Server error, please try again later');
             }

@@ -107,7 +107,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
 
             // Assert
             await waitFor(() => {
-                expect(global.alert).toHaveBeenCalledWith('Sai mật khẩu');
+                expect(global.alert).toHaveBeenCalledWith('Tên đăng nhập hoặc mật khẩu không đúng');
                 expect(authApi.getCurrentUser).not.toHaveBeenCalled();
             });
         });
@@ -126,7 +126,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
 
             // Assert
             await waitFor(() => {
-                expect(global.alert).toHaveBeenCalledWith('Đăng nhập thất bại. Vui lòng thử lại.');
+                expect(global.alert).toHaveBeenCalledWith('Server error, please try again later');
             });
         });
     });

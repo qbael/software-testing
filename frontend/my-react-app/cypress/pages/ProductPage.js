@@ -1,14 +1,12 @@
 class ProductPage {
     visit() {
-        cy.visit('/products'); // hoặc /admin nếu trang quản lý
+        cy.visit('/products');
     }
 
-    // Button Add Product
     clickAddNew() {
         cy.get('[data-testid="add-product-btn"]').click();
     }
 
-    // Form thao tác
     fillProductForm(product) {
         if (product.name) cy.get('[data-testid="product-name"]').clear().type(product.name);
         if (product.price) cy.get('[data-testid="product-price"]').clear().type(product.price);
@@ -20,15 +18,12 @@ class ProductPage {
         cy.get('[data-testid="submit-btn"]').click();
     }
 
-    // Các thao tác với sản phẩm trong list
-    // ProductPage.js
     editProduct(name, updatedProduct) {
         cy.contains('[data-testid="product-item"]', name)
             .within(() => {
-                cy.get('[data-testid="edit-btn"]').click(); // mở form edit
+                cy.get('[data-testid="edit-btn"]').click();
             });
 
-        // Clear và điền lại input trong form
         cy.get('[data-testid="product-form"]').within(() => {
             cy.get('[data-testid="product-name"]').clear().type('Tên mới');
             cy.get('[data-testid="product-price"]').clear().type('1000');
