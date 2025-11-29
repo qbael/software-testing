@@ -8,6 +8,13 @@ describe("Login E2E Test", () => {
     const invalidUser2 = { username: "mindang1", password: "wrongpassword" };
 
     it("Login thành công", () => {
+        cy.request('POST', `localhost:8080/api/auth/register`, {
+            username: "mindang1",
+            password: "mindang1",
+        }).then((response) => {
+            expect(response.status).to.eq(201);
+        });
+
         loginPage.visit();
         cy.url().should('include', '/login');
         cy.get('body').should('be.visible');
