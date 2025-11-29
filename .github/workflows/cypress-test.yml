@@ -84,7 +84,9 @@ jobs:
 
       - name: Build Backend
         working-directory: ./backend
-        run: ./mvnw clean package -DskipTests
+        run: |
+          chmod +x ./mvnw
+          ./mvnw clean package -DskipTests
 
       - name: Wait for PostgreSQL
         run: |
@@ -103,7 +105,7 @@ jobs:
 
       - name: Start Frontend Server
         working-directory: ./frontend/my-react-app
-        run: npm run dev
+        run: npm run dev &
 
       - name: Wait for Backend
         run: npx wait-on http://localhost:8080 --timeout 60000
