@@ -8,10 +8,11 @@ class ProductPage {
     }
 
     fillProductForm(product) {
-        if (product.name) cy.get('[data-testid="product-name"]').clear().type(product.name);
-        if (product.price) cy.get('[data-testid="product-price"]').clear().type(product.price);
-        if (product.quantity) cy.get('[data-testid="product-quantity"]').clear().type(product.quantity);
-        if (product.description) cy.get('[data-testid="product-description"]').clear().type(product.description);
+        if (product.productName) cy.get('[data-testid="product-input-productName"]').clear().type(product.productName);
+        if (product.price) cy.get('[data-testid="product-input-price"]').clear().type(product.price);
+        if (product.quantity) cy.get('[data-testid="product-input-quantity"]').clear().type(product.quantity);
+        if (product.description) cy.get('[data-testid="product-input-description"]').clear().type(product.description);
+        if (product.category) cy.get('[data-testid="product-input-category"]').select(product.category);
     }
 
     submitForm() {
@@ -24,12 +25,21 @@ class ProductPage {
                 cy.get('[data-testid="edit-btn"]').click();
             });
 
-        cy.get('[data-testid="product-form"]').within(() => {
-            cy.get('[data-testid="product-name"]').clear().type('Tên mới');
-            cy.get('[data-testid="product-price"]').clear().type('1000');
-            cy.get('[data-testid="product-quantity"]').clear().type('10');
-            cy.get('[data-testid="product-description"]').clear().type('Mô tả mới');
-        });
+        if (updatedProduct){
+            if (updatedProduct.productName) cy.get('[data-testid="product-input-productName"]').clear().type(updatedProduct.productName);
+            if (updatedProduct.price) cy.get('[data-testid="product-input-price"]').clear().type(updatedProduct.price);
+            if (updatedProduct.quantity) cy.get('[data-testid="product-input-quantity"]').clear().type(updatedProduct.quantity);
+            if (updatedProduct.description) cy.get('[data-testid="product-input-description"]').clear().type(updatedProduct.description);
+            if (updatedProduct.category) cy.get('[data-testid="product-input-category"]').select(updatedProduct.category);
+        } else {
+            cy.get('[data-testid="product-form"]').within(() => {
+                cy.get('[data-testid="product-input-productName"]').clear().type('Tên mới');
+                cy.get('[data-testid="product-input-price"]').clear().type('1000');
+                cy.get('[data-testid="product-input-quantity"]').clear().type('10');
+                cy.get('[data-testid="product-input-description"]').clear().type('Mô tả mới');
+                cy.get('[data-testid="product-input-category"]').select("LAPTOPS");
+            });
+        }
 
         cy.get('[data-testid="submit-btn"]').click();
     }
