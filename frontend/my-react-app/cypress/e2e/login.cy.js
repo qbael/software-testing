@@ -11,6 +11,7 @@ describe("Login E2E Test", () => {
         cy.request('POST', `localhost:8080/api/auth/register`, {
             username: "mindang1",
             password: "mindang1",
+            verifyPassword: "mindang1"
         }).then((response) => {
             expect(response.status).to.eq(201);
         });
