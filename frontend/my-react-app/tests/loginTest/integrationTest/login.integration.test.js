@@ -129,7 +129,7 @@ describe('Login Page Integration Tests', () => {
     // ============================================
     test('TC4: API Error - Should show alert on login failure', async () => {
         // Setup API mock trả về lỗi
-        const errorMsg = 'Sai mật khẩu hoặc tên đăng nhập';
+        const errorMsg = 'Server error, please try again later';
         const errorResponse = {
             response: { data: errorMsg }
         };

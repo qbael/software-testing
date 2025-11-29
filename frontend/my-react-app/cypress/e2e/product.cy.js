@@ -4,7 +4,7 @@ describe("Product E2E Test", () => {
     const page = new ProductPage();
 
     const mockProducts = [
-        { id: 1, name: "ao", price: 100, quantity: 5, description: "ao dep" },
+        { id: 1, productName: "ao", price: 100, quantity: 5, description: "ao dep" },
     ];
 
     beforeEach(() => {
@@ -83,9 +83,9 @@ describe("Product E2E Test", () => {
             statusCode: 200,
             body: {
                 content: [
-                    { id: 1, name: "iPhone 99", price: 9999, quantity: 10 },
-                    { id: 2, name: "Samsung Galaxy", price: 8000, quantity: 5 },
-                    { id: 3, name: "Xiaomi Note", price: 6000, quantity: 8 }
+                    { id: 1, productName: "iPhone 99", price: 9999, quantity: 10 },
+                    { id: 2, productName: "Samsung Galaxy", price: 8000, quantity: 5 },
+                    { id: 3, productName: "Xiaomi Note", price: 6000, quantity: 8 }
                 ],
                 totalPages: 1
             },

@@ -41,6 +41,7 @@ export default function ProductManagementPage() {
     const fetchProducts = async () => {
         try {
             const res = await getProducts(page, limit, sortBy, sortDir);
+            setProducts(res.data.content);
             setTotalPages(res.data.totalPages);
         } catch (err) {
             console.error("Failed to fetch products:", err);

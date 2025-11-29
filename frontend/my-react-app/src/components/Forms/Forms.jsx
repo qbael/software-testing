@@ -66,7 +66,6 @@ export default function Form({ formModel, onSubmit, closeIconDisplay = false, to
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log(checkValidity());
         if (checkValidity()) {
             const payload = Object.fromEntries(
                 Object.entries(DataErrorObj).map(([key, val]) => {

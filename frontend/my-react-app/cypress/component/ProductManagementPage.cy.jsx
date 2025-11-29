@@ -1,7 +1,7 @@
 import { mount } from '@cypress/react';
-import ProductManagementPage from '../../../src/pages/products/ProductManagementPage';
-import * as authApi from '../../../src/api/authApi';
-import * as productApi from '../../../src/api/productAPI';
+import ProductManagementPage from '../../src/pages/productPage/product.jsx';
+import * as authApi from '../../src/api/authApi.js';
+import * as productApi from '../../src/api/productAPI.js';
 
 describe('ProductManagementPage Component Test', () => {
 
