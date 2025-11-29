@@ -9,6 +9,9 @@ describe("Login E2E Test", () => {
 
     it("Login thành công", () => {
         loginPage.visit();
+        cy.url().should('include', '/login');
+        cy.get('body').should('be.visible');
+        cy.get('input, form, button', { timeout: 15000 }).should('exist');
         loginPage.typeUsername(validUser.username);
         loginPage.typePassword(validUser.password);
         loginPage.clickLogin();
