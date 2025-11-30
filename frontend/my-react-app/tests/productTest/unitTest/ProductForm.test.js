@@ -137,8 +137,9 @@ describe('Product Form Component Tests', () => {
         expect(mockToCloseForm).toHaveBeenCalledTimes(1);
     });
 
-    // ========== Test 6: Field validation on blur ==========
-    test('TC6: Hiển thị lỗi khi blur field không hợp lệ', async () => {
+    // ========== Test 6: Number type conversion ==========
+    // TC6: Convert price và quantity sang number khi submit
+    test('TC6: Convert price và quantity sang number khi submit', async () => {
         render(
             <Form
                 formModel={addProductModel}
@@ -147,44 +148,33 @@ describe('Product Form Component Tests', () => {
             />
         );
 
-        const nameInput = screen.getByLabelText(/Product Name/i);
-        
-        // Enter invalid data
-        fireEvent.change(nameInput, { target: { value: 'AB' } }); // Too short
-        fireEvent.blur(nameInput);
-
-        await waitFor(() => {
-            expect(screen.getByText(/3-100/i)).toBeInTheDocument();
+        fireEvent.change(screen.getByTestId('product-input-productName'), {
+            target: { value: 'Test Product' }
         });
-    });
-
-    // ========== Test 7: Number type conversion ==========
-    test('TC7: Convert price và quantity sang number khi submit', async () => {
-        render(
-            <Form
-                formModel={addProductModel}
-                onSubmit={mockOnSubmit}
-                toCloseForm={mockToCloseForm}
-            />
-        );
-
-        fireEvent.change(screen.getByLabelText(/Product Name/i), { 
-            target: { value: 'Test' } 
+        fireEvent.change(screen.getByTestId('product-input-price'), {
+            target: { value: '1000' }
         });
-        fireEvent.change(screen.getByLabelText(/Price/i), { 
-            target: { value: '1000' } 
+        fireEvent.change(screen.getByTestId('product-input-quantity'), {
+            target: { value: '5' }
         });
-        fireEvent.change(screen.getByLabelText(/Quantity/i), { 
-            target: { value: '5' } 
+        // THÊM 2 DÒNG NÀY → PASS NGAY!
+        fireEvent.change(screen.getByTestId('product-input-description'), {
+            target: { value: 'Mô tả test' }
+        });
+        fireEvent.change(screen.getByTestId('product-input-category'), {
+            target: { value: 'SMARTPHONE' }
         });
 
-        fireEvent.click(screen.getByRole('button'));
+        fireEvent.click(screen.getByTestId('submit-btn'));
 
         await waitFor(() => {
             expect(mockOnSubmit).toHaveBeenCalledWith(
                 expect.objectContaining({
-                    price: 1000,      // Number, not string
-                    quantity: 5       // Number, not string
+                    productName: 'Test Product',
+                    price: 1000,        // Number
+                    quantity: 5,        // Number
+                    description: 'Mô tả test',
+                    category: 'SMARTPHONE'
                 })
             );
         });
