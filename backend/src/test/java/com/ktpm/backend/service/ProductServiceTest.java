@@ -165,4 +165,57 @@ public class ProductServiceTest {
         verify(productRepository, never()).delete(any());
     }
 
+    @Test
+    @DisplayName("getAll() - Lỗi DB → ném RuntimeException")
+    void getAll_DatabaseError_ThrowsRuntimeException() {
+        Pageable pageable = PageRequest.of(0, 10);
+        when(productRepository.findAll(pageable))
+                .thenThrow(new RuntimeException("Database connection failed"));
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> productService.getAll(pageable));
+
+        assertTrue(exception.getMessage().contains("Lỗi khi lấy danh sách sản phẩm"));
+        verify(productRepository).findAll(pageable);
+    }
+
+    @Test
+    @DisplayName("updateProduct() - Lỗi DB khi save → ném RuntimeException")
+    void updateProduct_DatabaseError_ThrowsException() {
+        Product existing = Product.builder()
+                .id(validId)
+                .productName("Old")
+                .price(1000)
+                .quantity(10)
+                .category(Category.SMARTPHONE)
+                .build();
+
+        Product updateInfo = Product.builder()
+                .productName("New Name")
+                .price(2000)
+                .build();
+
+        when(productRepository.findById(validId)).thenReturn(Optional.of(existing));
+        when(productRepository.save(any(Product.class)))
+                .thenThrow(new RuntimeException("Constraint violation"));
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> productService.updateProduct(validId, updateInfo));
+
+        assertTrue(exception.getMessage().contains("Lỗi khi cập nhật sản phẩm"));
+    }
+
+    @Test
+    @DisplayName("deleteProduct() - Lỗi DB khi delete → ném RuntimeException")
+    void deleteProduct_DatabaseError_ThrowsException() {
+        when(productRepository.findById(validId)).thenReturn(Optional.of(product));
+        doThrow(new RuntimeException("Foreign key constraint"))
+                .when(productRepository).delete(product);
+
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> productService.deleteProduct(validId));
+
+        assertTrue(exception.getMessage().contains("Lỗi khi xóa sản phẩm"));
+        verify(productRepository).delete(product);
+    }
 }
