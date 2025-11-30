@@ -27,7 +27,8 @@ export default function ProductManagementPage() {
     const [sortDir, setSortDir] = useState("asc");
 
     const navigate = useNavigate();
-    const handleEdit= (p)=>{
+    // const isE2E = process.env.REACT_APP_E2E === "true";
+    const handleEdit = (p)=>{
         setEditing(true);
         setCurrProduct(p);
 
@@ -40,7 +41,7 @@ export default function ProductManagementPage() {
     const fetchProducts = async () => {
         try {
             const res = await getProducts(page, limit, sortBy, sortDir);
-            setProducts(res.data.content || []);
+            setProducts(res.data.content);
             setTotalPages(res.data.totalPages);
         } catch (err) {
             console.error("Failed to fetch products:", err);
@@ -63,7 +64,6 @@ export default function ProductManagementPage() {
     }, [page, limit, sortBy, sortDir]); // 🔹 load lại khi thay đổi
 
     const handleAdd = async (data) => {
-        console.log('lf: ',data)
         await createProduct(data);
         setShowForm(false);
         alert('Thêm sản phẩm thành công')
@@ -99,29 +99,54 @@ export default function ProductManagementPage() {
     return (
         <div>
             <Header username={currentUser?.username} onLogout={handleLogout} />
-            {displayBoard ?
+
+            {displayBoard && (
                 <div>
-                    <div className={styles.blurLayer}></div>
-                    <InfoBoard onClose={() => setDisplayBoard(false)} product={currProduct}/>
+                    {/*{!isE2E && <div className={styles.blurLayer}></div>}*/}
+                    <InfoBoard onClose={() => setDisplayBoard(false)} product={currProduct} />
                 </div>
-                : null}
+            )}
+
             <div className={styles.container}>
-            <h1 className={styles.title}>Quản lý sản phẩm</h1>
+                <h1 className={styles.title} data-testid="page-title">Quản lý sản phẩm</h1>
 
-                <SortControl sortBy={sortBy} sortDir={sortDir} onChange={(s, d) => { setSortBy(s); setSortDir(d); }} />
+                {/* Sort Control luôn hiển thị */}
+                <select
+                    data-testid="sort-by"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                >
+                    <option value="price">Giá</option>
+                    <option value="name">Tên</option>
+                </select>
 
-                {!showForm && !editing && (
-                    <button className={styles.addButton} onClick={() => setShowForm(true)}>
+                <select
+                    data-testid="sort-dir"
+                    value={sortDir}
+                    onChange={(e) => setSortDir(e.target.value)}
+                >
+                    <option value="asc">Tăng dần</option>
+                    <option value="desc">Giảm dần</option>
+                </select>
+
+                {/* Nút Add Product luôn hiển thị nếu không đang show form hoặc edit */}
+
+                    <button
+                        className={styles.addButton}
+                        onClick={() => setShowForm(true)}
+                        data-testid="add-product-btn"
+                    >
                         ➕ Thêm sản phẩm
                     </button>
-                )}
 
+
+                {/* Form Add / Edit */}
                 {(showForm || editing) && (
                     <div>
-                        <div className={styles.blurLayer}></div>
+                        {/*{!isE2E && <div className={styles.blurLayer}></div>}*/}
                         <div className={styles.formWrapper}>
                             <Form
-                                object={editing ? currProduct : null}  // ✅ đúng
+                                object={editing ? currProduct : null}
                                 toCloseForm={closeForm}
                                 closeIconDisplay={true}
                                 formModel={editing ? updateProductModel : addProductModel}
@@ -131,6 +156,7 @@ export default function ProductManagementPage() {
                     </div>
                 )}
 
+                {/* Danh sách sản phẩm */}
                 <ProductList
                     onDetailCheck={handleCheck}
                     products={products}
@@ -138,9 +164,11 @@ export default function ProductManagementPage() {
                     onDelete={handleDelete}
                 />
 
+                {/* Phân trang */}
                 <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
             </div>
         </div>
+
     );
 }
 

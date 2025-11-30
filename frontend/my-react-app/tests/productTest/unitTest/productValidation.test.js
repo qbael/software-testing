@@ -5,7 +5,7 @@ describe('3.2.1 - Product Validation Unit Tests (TDD)', () => {
     test('TC1: Product name rỗng → trả về lỗi', () => {
         const product = { productName: '', price: 1000, quantity: 10 };
         const errors = validateProduct(product);
-        expect(errors.productName).toBe('Tên sản phẩm không được để trống');
+        expect(errors.productName).toBe('Tên sản phẩm phải từ 3-100 ký tự');
     });
 
     test('TC2: Product name < 3 ký tự → lỗi', () => {

@@ -3,7 +3,7 @@ import styles from "./Pagination.module.css";
 export default function Pagination({ page, totalPages, onPageChange }) {
     return (
         <>
-            {page > 0 && (
+            {totalPages > 0 && (
                 <div className={styles.pagination}>
                     <button
                         onClick={() => onPageChange(page - 1)}

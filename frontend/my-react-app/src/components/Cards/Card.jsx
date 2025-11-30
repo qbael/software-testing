@@ -5,7 +5,7 @@ export default function Card({ product, onEdit, onDelete,onDetailCheck }) {
         <div className={styles.card}>
             <div>
                 <div className={styles.flexContainer}>
-                    <h2 className={styles.name}>{product.productName}</h2>
+                    <h2 className={styles.name} data-testid="product-name">{product.productName}</h2>
                     <img onClick={()=>onDetailCheck(product)} className={styles.icon} src={infoIcon} alt={"icon"}/>
                 </div>
 
@@ -20,10 +20,18 @@ export default function Card({ product, onEdit, onDelete,onDetailCheck }) {
             </div>
 
             <div className={styles.actions}>
-                <button className={styles.editBtn} onClick={() => onEdit(product)}>
+                <button
+                    className={styles.editBtn}
+                    data-testid="edit-btn"
+                    onClick={() => onEdit(product)}
+                >
                     ✏️ Sửa
                 </button>
-                <button className={styles.deleteBtn} onClick={() => onDelete(product.id)}>
+                <button
+                    className={styles.deleteBtn}
+                    data-testid="delete-btn"
+                    onClick={() => onDelete(product.id)}
+                >
                     🗑 Xóa
                 </button>
             </div>

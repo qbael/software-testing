@@ -1,0 +1,74 @@
+name: Cypress E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  cypress-run:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: ktpm
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: "npm"
+          cache-dependency-path: frontend/my-react-app/package-lock.json
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend/my-react-app
+        run: npm ci
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: |
+          chmod +x ./mvnw
+          ./mvnw clean package -DskipTests
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Start Backend
+        working-directory: ./backend
+        run: java -jar target/*.jar &
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ktpm
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: password
+
+      - name: Run Cypress Tests
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./frontend/my-react-app
+          start: npm run dev
+          wait-on: "http://localhost:3000"
+          browser: chrome
+        env:
+          CYPRESS_HEADLESS: true

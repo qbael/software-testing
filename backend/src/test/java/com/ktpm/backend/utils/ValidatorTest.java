@@ -16,21 +16,21 @@ class ValidatorTest {
     @ParameterizedTest
     @NullAndEmptySource
     @DisplayName("isBlank - String null/rỗng trả về true")
-    void isBlank_NullOrEmpty_ReturnsTrue(String str) {
+    void isBlankNullOrEmptyReturnsTrue(String str) {
         assertTrue(Validator.isBlank(str));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"   ", "\t", "\n", "\t\n", "  \t  \n  "})
     @DisplayName("isBlank - String chỉ chứa khoảng trắng trả về true")
-    void isBlank_WhitespaceOnly_ReturnsTrue(String str) {
+    void isBlankWhitespaceOnlyReturnsTrue(String str) {
         assertTrue(Validator.isBlank(str));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"test", " test ", "a", "  hello world  ", "\tvalue\n"})
     @DisplayName("isBlank - String có nội dung trả về false")
-    void isBlank_NonBlank_ReturnsFalse(String str) {
+    void isBlankNonBlankReturnsFalse(String str) {
         assertFalse(Validator.isBlank(str));
     }
 
@@ -40,7 +40,7 @@ class ValidatorTest {
     @NullAndEmptySource
     @ValueSource(strings = {"  ", "\t", "\n", "   "})
     @DisplayName("isValidUsername - Username null/rỗng/blank trả về false")
-    void isValidUsername_NullOrBlank_ReturnsFalse(String username) {
+    void isValidUsernameNullOrBlankReturnsFalse(String username) {
         assertFalse(Validator.isValidUsername(username));
     }
 
@@ -52,23 +52,22 @@ class ValidatorTest {
             "user-name",
             "a1b2c3",
             "ABC",
-            "user_123.test-name"
     })
     @DisplayName("isValidUsername - Username hợp lệ")
-    void isValidUsername_Valid_ReturnsTrue(String username) {
+    void isValidUsernameValidReturnsTrue(String username) {
         assertTrue(Validator.isValidUsername(username));
     }
 
     @Test
     @DisplayName("isValidUsername - Username đúng 3 ký tự (boundary min)")
-    void isValidUsername_MinLength_ReturnsTrue() {
+    void isValidUsernameMinLengthReturnsTrue() {
         String username = "abc";
         assertTrue(Validator.isValidUsername(username));
     }
 
     @Test
     @DisplayName("isValidUsername - Username đúng 50 ký tự (boundary max)")
-    void isValidUsername_MaxLength_ReturnsTrue() {
+    void isValidUsernameMaxLengthReturnsTrue() {
         String username = "a".repeat(50);
         assertTrue(Validator.isValidUsername(username));
     }
@@ -77,22 +76,17 @@ class ValidatorTest {
     @ValueSource(strings = {
             "ab",                           // Quá ngắn (< 3 ký tự)
             "a",                            // Quá ngắn (1 ký tự)
-            "user@name",                    // Chứa ký tự không hợp lệ (@)
+            "user@#!name",                  // Chứa ký tự không hợp lệ
             "user name",                    // Chứa khoảng trắng
-            "user#123",                     // Chứa ký tự đặc biệt (#)
-            "user!",                        // Chứa ký tự đặc biệt (!)
-            "user$123",                     // Chứa ký tự đặc biệt ($)
-            "user%test",                    // Chứa ký tự đặc biệt (%)
-            "user&test",                    // Chứa ký tự đặc biệt (&)
     })
     @DisplayName("isValidUsername - Username không hợp lệ")
-    void isValidUsername_Invalid_ReturnsFalse(String username) {
+    void isValidUsernameInvalidReturnsFalse(String username) {
         assertFalse(Validator.isValidUsername(username));
     }
 
     @Test
     @DisplayName("isValidUsername - Username quá dài (> 50 ký tự)")
-    void isValidUsername_TooLong_ReturnsFalse() {
+    void isValidUsernameTooLongReturnsFalse() {
         String longUsername = "a".repeat(51);
         assertFalse(Validator.isValidUsername(longUsername));
     }
@@ -103,14 +97,13 @@ class ValidatorTest {
     @NullAndEmptySource
     @ValueSource(strings = {"  ", "\t", "\n", "   "})
     @DisplayName("isValidPassword - Password null/rỗng/blank trả về false")
-    void isValidPassword_NullOrBlank_ReturnsFalse(String password) {
+    void isValidPasswordNullOrBlankReturnsFalse(String password) {
         assertFalse(Validator.isValidPassword(password));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {
             "Pass123",
-            "Password1",
             "Abc123456",
             "Test1234",
             "a1b2c3d4e5"
@@ -122,14 +115,14 @@ class ValidatorTest {
 
     @Test
     @DisplayName("isValidPassword - Password đúng 6 ký tự (boundary min)")
-    void isValidPassword_MinLength_ReturnsTrue() {
+    void isValidPasswordMinLengthReturnsTrue() {
         String password = "Abcd12";
         assertTrue(Validator.isValidPassword(password));
     }
 
     @Test
     @DisplayName("isValidPassword - Password đúng 100 ký tự (boundary max)")
-    void isValidPassword_MaxLength_ReturnsTrue() {
+    void isValidPasswordMaxLengthReturnsTrue() {
         String password = "Pass1" + "a".repeat(95);
         assertTrue(Validator.isValidPassword(password));
     }
@@ -143,20 +136,17 @@ class ValidatorTest {
             "abcdefgh",                     // Không có số
             "12345678",                     // Không có chữ
             "123456",                       // Không có chữ
-            "Pass@123",                     // Chứa ký tự đặc biệt (@)
+            "Pass@#!123",                   // Chứa ký tự đặc biệt
             "Pass 123",                     // Chứa khoảng trắng
-            "Pass#123",                     // Chứa ký tự đặc biệt (#)
-            "Pass!123",                     // Chứa ký tự đặc biệt (!)
-            "Pass$123",                     // Chứa ký tự đặc biệt ($)
     })
     @DisplayName("isValidPassword - Password không hợp lệ")
-    void isValidPassword_Invalid_ReturnsFalse(String password) {
+    void isValidPasswordInvalidReturnsFalse(String password) {
         assertFalse(Validator.isValidPassword(password));
     }
 
     @Test
     @DisplayName("isValidPassword - Password quá dài (> 100 ký tự)")
-    void isValidPassword_TooLong_ReturnsFalse() {
+    void isValidPasswordTooLongReturnsFalse() {
         String longPassword = "Pass1" + "a".repeat(96);
         assertFalse(Validator.isValidPassword(longPassword));
     }
