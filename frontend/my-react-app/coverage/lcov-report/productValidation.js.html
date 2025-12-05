@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for validate.js</title>
+    <title>Code coverage report for productValidation.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="prettify.css" />
     <link rel="stylesheet" href="base.css" />
@@ -19,20 +19,20 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="index.html">All files</a> validate.js</h1>
+        <h1><a href="index.html">All files</a> productValidation.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/12</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>13/13</span>
             </div>
         
             
@@ -88,76 +88,64 @@
 <a name='L23'></a><a href='#L23'>23</a>
 <a name='L24'></a><a href='#L24'>24</a>
 <a name='L25'></a><a href='#L25'>25</a>
-<a name='L26'></a><a href='#L26'>26</a>
-<a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L26'></a><a href='#L26'>26</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export function validateFields(fieldName, value, isRequired) {
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export function validateProduct(product) {
+    const errors = {};
 &nbsp;
-    if (isRequired &amp;&amp; !value || value.trim() === '') {
-        return 'This field is required';
+    if (!product.productName || product.productName.trim().length &lt; 3 || product.productName.length &gt; 100) {
+        errors.productName = 'Tên sản phẩm phải từ 3-100 ký tự';
     }
 &nbsp;
-    switch (fieldName) {
-        case 'name':
-            return /^[a-zA-Z0-9._-]{3,50}$/.test(value)
-                ? ''
-                : 'Name must be 3-50 characters long and can only contain letters, numbers, ".", "-", or "_"';
-        // case 'email':
-        //     return /^\S+@\S+\.\S+$/.test(value) ? '' : 'Invalid email. Example: MinhAnfe23@gmail.com';
-        //
-        // case 'phoneNumber':
-        //     return /^\d{10,}$/.test(value) ? '' : 'Phone Number must have at least 10 digits';
-&nbsp;
-        case 'password':
-            return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,100}$/.test(value)
-                ? ''
-                : 'Password must be 6-100 characters long and contain at least one letter and one number';
-&nbsp;
-        // case 'price':
-        //     return /^\d+(\.\d+)?$/.test(value) ? '' : 'Price should have digits only';
-&nbsp;
-        default:
-            return '';
+    if (!product.price || product.price &lt;= 0) {
+        errors.price = 'Giá phải lớn hơn 0';
     }
-}
-&nbsp;</pre></td></tr></table></pre>
+&nbsp;
+    if (product.quantity &lt; 0) {
+        errors.quantity = 'Số lượng phải &gt;= 0';
+    }
+&nbsp;
+    if (product.description &amp;&amp; product.description.length &gt; 500) {
+        errors.description = 'Mô tả không được vượt quá 500 ký tự';
+    }
+&nbsp;
+    const validCategories = ['SMARTPHONE', 'LAPTOPS', 'HEADPHONES', 'CAMERAS'];
+    if (!validCategories.includes(product.category)) {
+        errors.category = 'Danh mục không hợp lệ';
+    }
+&nbsp;
+    return errors;
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-11-29T10:39:33.698Z
+                at 2025-11-30T06:30:53.468Z
             </div>
         <script src="prettify.js"></script>
         <script>
