@@ -49,7 +49,7 @@ jobs:
           ./mvnw clean package
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ktpm
-          SPRING_DATASOURCE_USERNAME: rootnp
+          SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: password
 
       - name: Run Frontend Tests
