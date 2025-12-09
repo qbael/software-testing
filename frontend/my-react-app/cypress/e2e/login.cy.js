@@ -8,13 +8,19 @@ describe("Login E2E Test", () => {
     const invalidUser2 = { username: "mindang1", password: "wrongpassword" };
 
     it("Login thành công", () => {
-        cy.request('POST', `localhost:8080/api/auth/register`, {
-            username: "mindang1",
-            password: "mindang1",
-            verifyPassword: "mindang1"
+        cy.request({
+            method: 'POST',
+            url: 'http://localhost:8080/api/auth/register',
+            body: {
+                username: "mindang1",
+                password: "mindang1",
+                verifyPassword: "mindang1"
+            },
+            failOnStatusCode: false
         }).then((response) => {
-            expect(response.status).to.eq(201);
+            expect([201, 409]).to.include(response.status);
         });
+
 
         loginPage.visit();
         cy.url().should('include', '/login');

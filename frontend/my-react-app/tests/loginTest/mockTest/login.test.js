@@ -27,9 +27,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
         jest.clearAllMocks();
     });
 
-    // =======================
-    // a) Mock authApi.login()
-    // =======================
+    // Mock authApi.login()
     describe('Mock authApi functions', () => {
         test('should mock login and getCurrentUser functions successfully', () => {
             const mockLoginResponse = { id: '123', username: 'testuser' };
@@ -43,8 +41,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
         });
     });
 
-    // b) Test với mocked successful/failed responses
-
+    // Test với mocked successful/failed responses
     describe('Login with mocked responses', () => {
         test('should handle successful login', async () => {
             // Arrange
@@ -106,8 +103,10 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
 
             // Assert
             await waitFor(() => {
+                expect(authApi.login).toHaveBeenCalled();
                 expect(global.alert).toHaveBeenCalledWith('Tên đăng nhập hoặc mật khẩu không đúng');
                 expect(authApi.getCurrentUser).not.toHaveBeenCalled();
+                expect(mockNavigate).not.toHaveBeenCalled();
             });
         });
 
@@ -126,13 +125,12 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             // Assert
             await waitFor(() => {
                 expect(global.alert).toHaveBeenCalledWith('Server error, please try again later');
+                expect(mockNavigate).not.toHaveBeenCalled();
             });
         });
     });
 
-    // ====================
-    // c) Verify mock calls
-    // ====================
+    // Verify mock calls
     describe('Verify mock function calls', () => {
         test('should verify login is called exactly once with correct arguments', async () => {
             // Arrange

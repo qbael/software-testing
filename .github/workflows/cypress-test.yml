@@ -1,4 +1,4 @@
-name: Cypress E2E Tests
+name: Full Tests (Backend + Frontend + Cypress E2E)
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  cypress-run:
+  run-tests:
     runs-on: ubuntu-latest
 
     services:
@@ -22,7 +22,7 @@ jobs:
           - 5432:5432
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -32,21 +32,33 @@ jobs:
           cache: "npm"
           cache-dependency-path: frontend/my-react-app/package-lock.json
 
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend/my-react-app
-        run: npm ci
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
-      - name: Build Backend
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend/my-react-app
+        run: npm ci
+
+      - name: Run Backend Tests
         working-directory: ./backend
         run: |
           chmod +x ./mvnw
-          ./mvnw clean package -DskipTests
+          ./mvnw test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ktpm
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: password
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: ./mvnw clean package -DskipTests
+
+      - name: Run Frontend Tests
+        working-directory: ./frontend/my-react-app
+        run: npm test -- --ci --watchAll=false
 
       - name: Wait for PostgreSQL
         run: |
@@ -63,7 +75,7 @@ jobs:
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: password
 
-      - name: Run Cypress Tests
+      - name: Run Cypress E2E Tests
         uses: cypress-io/github-action@v6
         with:
           working-directory: ./frontend/my-react-app
