@@ -58,7 +58,7 @@ jobs:
 
       - name: Run Frontend Tests
         working-directory: ./frontend/my-react-app
-        run: npm test -- --ci --watchAll=false
+        run: npm test -- --ci --watchAll=false --verbose
 
       - name: Wait for PostgreSQL
         run: |
