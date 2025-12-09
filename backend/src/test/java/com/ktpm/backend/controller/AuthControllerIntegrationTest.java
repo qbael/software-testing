@@ -50,10 +50,7 @@ class AuthControllerIntegrationTest {
     @MockitoBean
     private JwtAuthFilter jwtAuthFilter;
 
-    // ============================================
-    // a) Test POST /api/auth/login endpoint (3 điểm)
-    // ============================================
-
+    // Test POST /api/auth/login endpoint
     @Test
     @DisplayName("TC1: Login Success - Trả về 200, Cookie Token và User Info")
     void testLoginSuccess() throws Exception {
@@ -84,10 +81,7 @@ class AuthControllerIntegrationTest {
                 .andExpect(jsonPath("$.id").exists());
     }
 
-    // ============================================
-    // b) Test response structure và status codes (1 điểm)
-    // ============================================
-
+    // Test response structure và status codes
     @Test
     @DisplayName("TC2: Login Fail - User Not Found (404)")
     void testLoginFailure_UserNotFound() throws Exception {
@@ -122,14 +116,10 @@ class AuthControllerIntegrationTest {
                 .andExpect(content().string("Sai mật khẩu"));
     }
 
-    // ============================================
-    // c) Test CORS và headers (1 điểm)
-    // ============================================
-
+    // Test CORS và headers
     @Test
     @DisplayName("TC4: Test CORS Configuration")
     void testCorsHeaders() throws Exception {
-        // Arrange: Chuẩn bị dữ liệu hợp lệ để tránh NullPointerException trong Controller
         String username = "test";
         String password = "test";
         UUID userId = UUID.randomUUID();

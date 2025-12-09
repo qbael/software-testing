@@ -2,10 +2,6 @@ import { validateFields } from '../../../src/utils/validations/validate.js';
 
 describe('Validation Module - Login Tests', () => {
 
-    // ============================================
-    // a) Unit tests cho validateUsername() - 2 điểm
-    // ============================================
-
     describe('validateUsername', () => {
         const ERROR_MSG = 'Name must be 3-50 characters long and can only contain letters, numbers, ".", "-", or "_"';
         // Test username rỗng
@@ -56,10 +52,6 @@ describe('Validation Module - Login Tests', () => {
             expect(result).toBe('');
         });
     });
-
-    // ============================================
-    // b) Unit tests cho validatePassword() - 2 điểm
-    // ============================================
 
     describe('validatePassword', () => {
         const ERROR_MSG = 'Password must be 6-100 characters long and contain at least one letter and one number';
@@ -122,9 +114,7 @@ describe('Validation Module - Login Tests', () => {
         });
     });
 
-    // ============================================
     // Additional Edge Cases for Coverage >= 90%
-    // ============================================
 
     describe('Additional Edge Cases', () => {
         test.each([

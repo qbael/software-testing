@@ -27,9 +27,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
         jest.clearAllMocks();
     });
 
-    // ============================================
-    // a) Mock authApi.login() (1 điểm)
-    // ============================================
+    // Mock authApi.login()
     describe('Mock authApi functions', () => {
         test('should mock login and getCurrentUser functions successfully', () => {
             const mockLoginResponse = { id: '123', username: 'testuser' };
@@ -43,9 +41,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
         });
     });
 
-    // ============================================
-    // b) Test với mocked successful/failed responses (1 điểm)
-    // ============================================
+    // Test với mocked successful/failed responses
     describe('Login with mocked responses', () => {
         test('should handle successful login', async () => {
             // Arrange
@@ -131,9 +127,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
         });
     });
 
-    // ============================================
-    // c) Verify mock calls (0.5 điểm)
-    // ============================================
+    // Verify mock calls
     describe('Verify mock function calls', () => {
         test('should verify login is called exactly once with correct arguments', async () => {
             // Arrange

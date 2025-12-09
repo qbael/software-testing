@@ -7,14 +7,14 @@ module.exports = defineConfig({
             require('cypress-mochawesome-reporter/plugin')(on);
             return config;
         },
-        specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}', // Định nghĩa file E2E
+        specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     },
     component: {
         devServer: {
             framework: 'react',
             bundler: 'webpack',
         },
-        specPattern: 'cypress/component/**/*.cy.{js,jsx,ts,tsx}', // File Component Test
+        specPattern: 'cypress/component/**/*.cy.{js,jsx,ts,tsx}',
     },
     reporter: 'cypress-mochawesome-reporter',
     reporterOptions: {
