@@ -42,8 +42,6 @@ class AuthControllerMockTest {
     @MockBean
     private JwtUtil jwtUtil;
 
-    // ==================== LOGIN TESTS ====================
-
     @Test
     void testLoginSuccess() throws Exception {
         // Arrange
@@ -74,12 +72,12 @@ class AuthControllerMockTest {
                 .andExpect(cookie().maxAge("token", 24 * 60 * 60 * 3))
                 .andReturn();
 
-        verify(authService, times(1)).authenticate("testuser", "Password123");
-        verify(jwtUtil, times(1)).generateToken(userId, "testuser");
-
         Cookie jwtCookie = result.getResponse().getCookie("token");
         assertThat(jwtCookie).isNotNull();
         assertThat(jwtCookie.getValue()).isEqualTo(mockToken);
+
+        verify(authService, times(1)).authenticate("testuser", "Password123");
+        verify(jwtUtil, times(1)).generateToken(userId, "testuser");
     }
 
     @Test
@@ -131,7 +129,8 @@ class AuthControllerMockTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Không tìm thấy người dùng"));
+                .andExpect(content().string("Không tìm thấy người dùng"))
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate("nonexistent", "Password123");
         verify(jwtUtil, never()).generateToken(any(UUID.class), anyString());

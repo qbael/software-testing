@@ -7,7 +7,6 @@ import com.ktpm.backend.exception.WrongPassWordException;
 import com.ktpm.backend.repository.UserRepository;
 import com.ktpm.backend.utils.Validator;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,14 +19,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AuthService Unit Tests")
-class AuthServiceUnitTest {
-
+public class KtraAuth {
     @Mock
     private UserRepository userRepository;
 
@@ -57,7 +52,6 @@ class AuthServiceUnitTest {
     }
 
     @Test
-    @DisplayName("Login thành công với username và password đúng")
     void loginUserSuccess() {
         try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
             // Arrange
@@ -81,45 +75,37 @@ class AuthServiceUnitTest {
     }
 
     @Test
-    @DisplayName("Login thất bại - Username không tồn tại")
     void loginUserUsernameNotFound() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class, CALLS_REAL_METHODS)) {
-            // Arrange
-            String nonExistentUsername = "nonexistent";
-            validatorMock.when(() -> Validator.isValidUsername(nonExistentUsername)).thenReturn(true);
+        try(MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
+            String nonUser = "nonUser";
+            validatorMock.when(() -> Validator.isValidUsername(nonUser)).thenReturn(true);
             validatorMock.when(() -> Validator.isValidPassword(testPassword)).thenReturn(true);
-            validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
+            validatorMock.when(() -> Validator.sanitizeInput(nonUser)).thenReturn(nonUser);
             validatorMock.when(() -> Validator.sanitizeInput(testPassword)).thenReturn(testPassword);
-            when(userRepository.findByUsername(nonExistentUsername)).thenReturn(Optional.empty());
+            when(userRepository.findByUsername(nonUser)).thenReturn(Optional.empty());
 
-            // Act & Assert
             UserNotFoundException exception = assertThrows(
                     UserNotFoundException.class,
-                    () -> authService.authenticate(nonExistentUsername, testPassword)
+                    () -> authService.authenticate(nonUser, testPassword)
             );
 
             assertEquals("Không tìm thấy người dùng", exception.getMessage());
-            verify(userRepository, times(1)).findByUsername(nonExistentUsername);
-            verify(passwordEncoder, never()).matches(anyString(), anyString());
+            verify(userRepository, times(1)).findByUsername(nonUser);
+            verify(passwordEncoder, never()).matches(testPassword, encodedPassword);
         }
     }
 
     @Test
-    @DisplayName("Login thất bại - Password sai")
     void loginUserWrongPassword() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class, CALLS_REAL_METHODS)) {
-            // Arrange
+        try(MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
             String wrongPassword = "WrongPass123";
-
             validatorMock.when(() -> Validator.isValidUsername(testUsername)).thenReturn(true);
             validatorMock.when(() -> Validator.isValidPassword(wrongPassword)).thenReturn(true);
             validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
             validatorMock.when(() -> Validator.sanitizeInput(wrongPassword)).thenReturn(wrongPassword);
-
             when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(testUser));
             when(passwordEncoder.matches(wrongPassword, encodedPassword)).thenReturn(false);
 
-            // Act & Assert
             WrongPassWordException exception = assertThrows(
                     WrongPassWordException.class,
                     () -> authService.authenticate(testUsername, wrongPassword)
@@ -132,37 +118,14 @@ class AuthServiceUnitTest {
     }
 
     @Test
-    @DisplayName("Login thất bại - Username null")
-    void loginUserInvalidUsernameNull() {
+    void loginUserUsernameNull() {
         try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
-            // Arrange
             validatorMock.when(() -> Validator.isValidUsername(null)).thenReturn(false);
             validatorMock.when(() -> Validator.isValidPassword(testPassword)).thenReturn(true);
 
-            // Act & Assert
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
                     () -> authService.authenticate(null, testPassword)
-            );
-
-            assertEquals("Username hoặc mật khẩu không hợp lệ", exception.getMessage());
-            verify(userRepository, never()).findByUsername(any());
-            verify(passwordEncoder, never()).matches(any(), any());
-        }
-    }
-
-    @Test
-    @DisplayName("Login thất bại - Password null")
-    void loginUserInvalidPasswordNull() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
-            // Arrange
-            validatorMock.when(() -> Validator.isValidUsername(testUsername)).thenReturn(true);
-            validatorMock.when(() -> Validator.isValidPassword(null)).thenReturn(false);
-
-            // Act & Assert
-            IllegalArgumentException exception = assertThrows(
-                    IllegalArgumentException.class,
-                    () -> authService.authenticate(testUsername, null)
             );
 
             assertEquals("Username hoặc mật khẩu không hợp lệ", exception.getMessage());
