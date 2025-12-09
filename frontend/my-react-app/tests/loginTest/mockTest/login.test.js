@@ -103,8 +103,10 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
 
             // Assert
             await waitFor(() => {
+                expect(authApi.login).toHaveBeenCalled();
                 expect(global.alert).toHaveBeenCalledWith('Tên đăng nhập hoặc mật khẩu không đúng');
                 expect(authApi.getCurrentUser).not.toHaveBeenCalled();
+                expect(mockNavigate).not.toHaveBeenCalled();
             });
         });
 
@@ -123,6 +125,7 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
             // Assert
             await waitFor(() => {
                 expect(global.alert).toHaveBeenCalledWith('Server error, please try again later');
+                expect(mockNavigate).not.toHaveBeenCalled();
             });
         });
     });

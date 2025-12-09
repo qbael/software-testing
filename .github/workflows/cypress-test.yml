@@ -42,7 +42,7 @@ jobs:
         working-directory: ./frontend/my-react-app
         run: npm ci
 
-      - name: Test Backend
+      - name: Run Backend Tests
         working-directory: ./backend
         run: |
           chmod +x ./mvnw
@@ -52,7 +52,7 @@ jobs:
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: password
 
-      - name: Build & Test Backend
+      - name: Build Backend
         working-directory: ./backend
         run: ./mvnw clean package -DskipTests
 

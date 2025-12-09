@@ -94,7 +94,9 @@ class AuthControllerMockTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Username hoặc mật khẩu không hợp lệ"))
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate("ab", "Password123");
         verify(jwtUtil, never()).generateToken(any(UUID.class), anyString());
@@ -112,7 +114,9 @@ class AuthControllerMockTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Username hoặc mật khẩu không hợp lệ"))
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate("testuser", "12345");
         verify(jwtUtil, never()).generateToken(any(UUID.class), anyString());
@@ -131,7 +135,8 @@ class AuthControllerMockTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string("Không tìm thấy người dùng"));
+                .andExpect(content().string("Không tìm thấy người dùng"))
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate("nonexistent", "Password123");
         verify(jwtUtil, never()).generateToken(any(UUID.class), anyString());
@@ -169,7 +174,9 @@ class AuthControllerMockTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Username hoặc mật khẩu không hợp lệ"))
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate(isNull(), eq("Password123"));
     }
@@ -186,7 +193,9 @@ class AuthControllerMockTest {
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Username hoặc mật khẩu không hợp lệ"))
+                .andExpect(cookie().doesNotExist("token"));
 
         verify(authService, times(1)).authenticate(eq("testuser"), isNull());
     }
