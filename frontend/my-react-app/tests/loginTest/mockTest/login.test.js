@@ -45,46 +45,40 @@ describe('LoginPage Component - Frontend Mocking Tests', () => {
     describe('Login with mocked responses', () => {
         test('should handle successful login', async () => {
             // Arrange
-            authApi.login.mockResolvedValue({ id: '123', username: 'validuser' });
-            authApi.getCurrentUser.mockResolvedValue({ id: '123', username: 'validuser' });
+            authApi.login.mockResolvedValue({id: '123', name: 'testuser'})
+            authApi.getCurrentUser.mockResolvedValue({id: '123', name: 'testuser'})
 
-            const user = userEvent.setup();
-            renderWithRouter(<LoginPage />);
+            const user = userEvent.setup()
+            renderWithRouter(<LoginPage />)
 
-            // Act
-            await user.type(screen.getByLabelText(/^Name/i), 'validuser');
-            await user.type(screen.getByLabelText(/^Password/i), 'ValidPass123');
-            await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
+            await user.type(screen.getByLabelText(/^Name/i), 'testuser')
+            await user.type(screen.getByLabelText(/^Password/i), 'Password123')
+            await user.click(screen.getByRole('button', { name: /đăng nhập/i}))
 
-            // Assert
             await waitFor(() => {
-                expect(authApi.login).toHaveBeenCalledWith('validuser', 'ValidPass123');
-                expect(authApi.getCurrentUser).toHaveBeenCalled();
-                expect(global.alert).toHaveBeenCalledWith('Đăng nhập thành công!');
-                expect(mockNavigate).toHaveBeenCalledWith('/admin');
-            });
+                expect(authApi.login).toHaveBeenCalledWith('testuser', 'Password123')
+                expect(authApi.getCurrentUser).toHaveBeenCalled()
+                expect(global.alert).toHaveBeenCalledWith('Đăng nhập thành công!')
+                expect(mockNavigate).toHaveBeenCalledWith('/admin')
+            })
         });
 
         test('should handle user not found error (404)', async () => {
-            // Arrange
-            authApi.login.mockRejectedValue({
-                response: { status: 404, data: 'Không tìm thấy người dùng' }
-            });
+            authApi.login.mockRejectedValue({response: {status: 404, data: 'Không tìm thấy người dùng'}})
 
-            const user = userEvent.setup();
-            renderWithRouter(<LoginPage />);
+            const user = userEvent.setup()
+            renderWithRouter(<LoginPage/>)
 
-            // Act
-            await user.type(screen.getByLabelText(/^Name/i), 'wronguser');
-            await user.type(screen.getByLabelText(/^Password/i), 'Pass123');
-            await user.click(screen.getByRole('button', { name: /đăng nhập/i }));
+            await user.type(screen.getByLabelText(/^Name/i), 'notfounduser')
+            await user.type(screen.getByLabelText(/^Password/i), 'Password123')
+            await user.click(screen.getByRole('button', {name: /đăng nhập/i}))
 
-            // Assert
             await waitFor(() => {
-                expect(authApi.login).toHaveBeenCalled();
-                expect(global.alert).toHaveBeenCalledWith('Không tìm thấy người dùng');
-                expect(mockNavigate).not.toHaveBeenCalled();
-            });
+                expect(authApi.login).toHaveBeenCalledWith('notfounduser', 'Password123')
+                expect(authApi.getCurrentUser).not.toHaveBeenCalledWith('notfounduser', 'Password123')
+                expect(global.alert).toHaveBeenCalledWith('Không tìm thấy người dùng')
+                expect(mockNavigate).not.toHaveBeenCalled()
+            })
         });
 
         test('should handle wrong password error (401)', async () => {

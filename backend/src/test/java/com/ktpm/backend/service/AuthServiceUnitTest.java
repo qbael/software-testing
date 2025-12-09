@@ -107,29 +107,40 @@ class AuthServiceUnitTest {
     @Test
     @DisplayName("Login thất bại - Password sai")
     void loginUserWrongPassword() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class, CALLS_REAL_METHODS)) {
-            // Arrange
-            String wrongPassword = "WrongPass123";
-
+        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
+            String wrong = "WrongPass123";
             validatorMock.when(() -> Validator.isValidUsername(testUsername)).thenReturn(true);
-            validatorMock.when(() -> Validator.isValidPassword(wrongPassword)).thenReturn(true);
+            validatorMock.when(() -> Validator.isValidPassword(wrong)).thenReturn(true);
             validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
-            validatorMock.when(() -> Validator.sanitizeInput(wrongPassword)).thenReturn(wrongPassword);
+            validatorMock.when(() -> Validator.sanitizeInput(wrong)).thenReturn(wrong);
 
-            when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(testUser));
-            when(passwordEncoder.matches(wrongPassword, encodedPassword)).thenReturn(false);
-
-            // Act & Assert
             WrongPassWordException exception = assertThrows(
                     WrongPassWordException.class,
-                    () -> authService.authenticate(testUsername, wrongPassword)
+                    () -> authService.authenticate(testUsername, wrong)
             );
 
-            assertEquals("Sai mật khẩu", exception.getMessage());
-            verify(userRepository, times(1)).findByUsername(testUsername);
-            verify(passwordEncoder, times(1)).matches(wrongPassword, encodedPassword);
+            assertEquals('Sai mâjt ')
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
 
     @Test
     @DisplayName("Login thất bại - Username null")

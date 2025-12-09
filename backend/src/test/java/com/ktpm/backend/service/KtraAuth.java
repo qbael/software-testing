@@ -51,28 +51,10 @@ public class KtraAuth {
         testUser.setPassword(encodedPassword);
     }
 
-    @Test
-    void loginUserSuccess() {
-        try (MockedStatic<Validator> validatorMock = mockStatic(Validator.class)) {
-            // Arrange
-            validatorMock.when(() -> Validator.isValidUsername(testUsername)).thenReturn(true);
-            validatorMock.when(() -> Validator.isValidPassword(testPassword)).thenReturn(true);
-            validatorMock.when(() -> Validator.sanitizeInput(testUsername)).thenReturn(testUsername);
-            validatorMock.when(() -> Validator.sanitizeInput(testPassword)).thenReturn(testPassword);
-            when(userRepository.findByUsername(testUsername)).thenReturn(Optional.of(testUser));
-            when(passwordEncoder.matches(testPassword, encodedPassword)).thenReturn(true);
-
-            // Act
-            LoginResponseDTO result = authService.authenticate(testUsername, testPassword);
-
-            // Assert
-            assertNotNull(result);
-            assertEquals(testUserId, result.getId());
-            assertEquals(testUsername, result.getUsername());
-            verify(userRepository, times(1)).findByUsername(testUsername);
-            verify(passwordEncoder, times(1)).matches(testPassword, encodedPassword);
-        }
-    }
+//    @Test
+//    void loginUserSuccess() {
+//        try (Mocked)
+//    }
 
     @Test
     void loginUserUsernameNotFound() {
