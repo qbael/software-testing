@@ -116,6 +116,7 @@ export default function ProductManagementPage() {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                 >
+                    <option value="">Chọn</option>
                     <option value="price">Giá</option>
                     <option value="name">Tên</option>
                 </select>

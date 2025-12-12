@@ -38,9 +38,7 @@ describe('Login Page Integration Tests', () => {
         jest.clearAllMocks();
     });
 
-    // ============================================
-    // a) Test rendering và user interactions (2 điểm)
-    // ============================================
+    // Test rendering và user interactions
     test('TC1: Should render login form correctly and allow typing', () => {
         render(<LoginPage />);
 
@@ -66,10 +64,7 @@ describe('Login Page Integration Tests', () => {
         expect(passwordInput.value).toBe('Pass123');
     });
 
-    // ============================================
-    // c) Test error handling (Validation Client-side) (1 điểm)
-    // ============================================
-    // (Lưu ý: Test validation được đưa lên trước test flow API để kiểm tra chặn lỗi trước)
+    // Test error handling (Validation Client-side)
     test('TC2: Validation Error - Should not call API if empty', async () => {
         render(<LoginPage />);
 
@@ -88,9 +83,7 @@ describe('Login Page Integration Tests', () => {
         });
     });
 
-    // ============================================
-    // b) Test form submission và API calls (2 điểm)
-    // ============================================
+    // Test form submission và API calls
     test('TC3: Happy Path - Login success and navigate to admin', async () => {
         // Setup API mock trả về thành công
         login.mockResolvedValue({ success: true });
@@ -124,9 +117,7 @@ describe('Login Page Integration Tests', () => {
         });
     });
 
-    // ============================================
-    // c) Test error handling (API Error Server-side) (tiếp theo)
-    // ============================================
+    // Test error handling (API Error Server-side)
     test('TC4: API Error - Should show alert on login failure', async () => {
         // Setup API mock trả về lỗi
         const errorMsg = 'Server error, please try again later';

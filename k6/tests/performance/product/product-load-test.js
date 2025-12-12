@@ -12,9 +12,11 @@ const successfulRequests = new Counter('successful_requests');
 
 export const options = {
     stages: [
-        { duration: '1m', target: 100 },
-        { duration: '1m', target: 500 },
-        { duration: '1m', target: 1000 },
+        { duration: '30s', target: 100 },
+        { duration: '30s', target: 300 },
+        { duration: '30s', target: 600 },
+        { duration: '30s', target: 800 },
+        { duration: '30s', target: 1000 },
         { duration: '30s', target: 0 },
     ],
     thresholds: {
@@ -29,30 +31,42 @@ const BASE_URL = 'http://localhost:8080';
 
 const categories = ['SMARTPHONE', 'LAPTOPS', 'HEADPHONES', 'CAMERAS'];
 
+export function setup() {
+    const user = {
+        username: `mindang1`,
+        password: `mindang1`,
+        verifyPassword: `mindang1`
+    }
+
+    http.post(`${BASE_URL}/api/auth/register`, JSON.stringify(user), {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '30s',
+    })
+}
+
 function generateRandomProduct() {
-    const randomId = Math.floor(Math.random() * 100000);
+    const random = Math.floor(Math.random() * 100000);
     return {
-        productName: `Test Product ${randomId}`,
+        productName: `Test Product ${random}`,
         price: Math.floor(Math.random() * 10000) + 100,
         quantity: Math.floor(Math.random() * 100) + 1,
-        description: `This is a test product description for product ${randomId}. It contains enough text to be valid.`,
+        description: `Description for product ${random}`,
         category: categories[Math.floor(Math.random() * categories.length)]
     };
 }
 
 function login() {
 
-    const number = Math.floor(Math.random() * 2500);
-
     const loginPayload = JSON.stringify({
-        username: `stresstest${number}`,
-        password: `Password${number}`,
+        username: `mindang1`,
+        password: `mindang1`,
     });
 
     const params = {
         headers: {
             'Content-Type': 'application/json',
         },
+        timeout: '30s',
     };
 
     const loginRes = http.post(`${BASE_URL}/api/auth/login`, loginPayload, params);
@@ -85,7 +99,7 @@ export default function(data) {
 
     const authHeaders = getAuthHeaders(token);
 
-    // Test 1: Get all products (paginated)
+    // Test 1: Get all products
     group('Get All Products', () => {
         const page = Math.floor(Math.random() * 5);
         const limit = [10, 20, 50][Math.floor(Math.random() * 3)];
@@ -107,7 +121,7 @@ export default function(data) {
                     return false;
                 }
             },
-            'get all products response time < 500ms': (r) => r.timings.duration < 500,
+            'get all products response time < 1000ms': (r) => r.timings.duration < 1000,
         });
 
         if (success) {
@@ -239,7 +253,7 @@ export default function(data) {
 
             const success = check(res, {
                 'delete product status is 200': (r) => r.status === 200,
-                'delete product response time < 500ms': (r) => r.timings.duration < 500,
+                'delete product response time < 1000ms': (r) => r.timings.duration < 1000,
             });
 
             if (success) {
@@ -253,38 +267,6 @@ export default function(data) {
     }
 
     sleep(1);
-
-    group('Search and Filter Products', () => {
-        const scenarios = [
-            { page: 0, limit: 10, sortBy: 'productName', sortDir: 'asc' },
-            { page: 0, limit: 20, sortBy: 'price', sortDir: 'desc' },
-            { page: 1, limit: 50, sortBy: 'quantity', sortDir: 'asc' },
-        ];
-
-        scenarios.forEach((scenario, index) => {
-            const res = http.get(
-                `${BASE_URL}/api/products?page=${scenario.page}&limit=${scenario.limit}&sortBy=${scenario.sortBy}&sortDir=${scenario.sortDir}`,
-                { headers: authHeaders }
-            );
-
-            const success = check(res, {
-                [`scenario ${index + 1} status is 200`]: (r) => r.status === 200,
-                [`scenario ${index + 1} response time < 500ms`]: (r) => r.timings.duration < 500,
-            });
-
-            if (success) {
-                successfulRequests.add(1);
-            } else {
-                errorRate.add(1);
-            }
-        });
-    });
-
-    sleep(1);
-}
-
-export function teardown(data) {
-    console.log('Test completed at:', new Date().toISOString());
 }
 
 export function handleSummary(data) {

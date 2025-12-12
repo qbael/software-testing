@@ -8,11 +8,6 @@ describe("Product E2E Test", () => {
     ];
 
     beforeEach(() => {
-        window.localStorage.setItem(
-            "user",
-            JSON.stringify({ id: 1, username: "mindang1", role: "admin" })
-        );
-
         cy.intercept("GET", "/api/auth/current", {
             statusCode: 200,
             body: { id: 1, username: "mindang1", role: "admin" },
@@ -118,7 +113,7 @@ describe("Product E2E Test", () => {
                 content: [
                     { id: 1, productName: "iPhone 99", price: 9999, quantity: 10 },
                     { id: 2, productName: "Samsung Galaxy", price: 8000, quantity: 5 },
-                    { id: 3, productName: "Xiaomi Note", price: 6000, quantity: 8 }
+                    { id: 3, productName: "Xiaomi Note", price: 6000, quantity: 8 },
                 ],
                 totalPages: 1
             },
@@ -129,11 +124,11 @@ describe("Product E2E Test", () => {
         cy.get('[data-testid="sort-by"]').select("price");
         cy.get('[data-testid="sort-dir"]').select("desc");
 
-        cy.get('[data-testid="product-item"]')
+        cy.get('[data-testid="product-name"]')
             .first()
             .should("contain.text", "iPhone 99");
 
-        cy.get('[data-testid="product-item"]')
+        cy.get('[data-testid="product-name"]')
             .last()
             .should("contain.text", "Xiaomi Note");
     });
@@ -157,4 +152,5 @@ describe("Product E2E Test", () => {
 
         page.checkProductExists("ao").should("not.exist");
     });
+
 });

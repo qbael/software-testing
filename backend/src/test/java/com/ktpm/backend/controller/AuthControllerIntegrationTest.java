@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
-// Quan trọng: Tắt bớt các filter bảo mật mặc định để request vào được Controller dễ dàng hơn
 @AutoConfigureMockMvc(addFilters = false)
 @DisplayName("Login API Integration Tests")
 class AuthControllerIntegrationTest {
@@ -140,7 +139,5 @@ class AuthControllerIntegrationTest {
                         .content(objectMapper.writeValueAsString(request))
                         .header("Origin", "http://localhost:3000"))
                 .andExpect(status().isOk());
-        // Ở đây chúng ta chỉ cần expect 200 OK là đủ chứng minh request không bị chặn bởi CORS pre-flight
-        // và logic controller chạy mượt mà.
     }
 }

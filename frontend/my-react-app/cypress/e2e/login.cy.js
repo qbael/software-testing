@@ -5,7 +5,8 @@ describe("Login E2E Test", () => {
 
     const validUser = { username: "mindang1", password: "mindang1" };
     const invalidUser = { username: "wrong", password: "wrong" };
-    const invalidUser2 = { username: "mindang1", password: "wrongpassword" };
+    const invalidUser2 = { username: "mindang1", password: "mindang2" };
+    const invalidUser3 = { username: "mindang2", password: "mindang1" };
 
     it("Login thành công", () => {
         cy.request({
@@ -38,12 +39,12 @@ describe("Login E2E Test", () => {
 
     it("Login thất bại - username sai", () => {
         loginPage.visit();
-        loginPage.typeUsername(invalidUser.username);
-        loginPage.typePassword(invalidUser.password);
+        loginPage.typeUsername(invalidUser3.username);
+        loginPage.typePassword(invalidUser3.password);
         loginPage.clickLogin();
 
         cy.on('window:alert', (txt) => {
-            expect(txt).to.contains("Username or password incorrect");
+            expect(txt).to.contains("Không tìm thấy người dùng");
         });
     });
 
@@ -54,7 +55,7 @@ describe("Login E2E Test", () => {
         loginPage.clickLogin();
 
         cy.on('window:alert', (txt) => {
-            expect(txt).to.contains("Username or password incorrect");
+            expect(txt).to.contains("Không tìm thấy người dùng");
         });
     });
 
