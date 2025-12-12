@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(SecurityConfig.class)
 @DisplayName("Security Test - XSS Prevention")
 public class XssSecurityTest {
 
@@ -92,20 +91,6 @@ public class XssSecurityTest {
     @DisplayName("XSS Test 2: Request header và cookie chứa mã độc XSS")
     void testXssInRequestHeader() throws Exception {
         String malicious = "<script>alert('xss123')</script>";
-
-        LoginRequestDTO loginRequest = new LoginRequestDTO();
-        loginRequest.setUsername("testuser123");
-        loginRequest.setPassword("testuser123");
-
-        String token = Objects.requireNonNull(mockMvc.perform(post("/api/auth/login")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(loginRequest)))
-                        .andExpect(status().isOk())
-                        .andReturn()
-                        .getResponse()
-                        .getCookie("token"))
-                .getValue();
-
 
         Product product = Product.builder()
                 .productName("Test Product")

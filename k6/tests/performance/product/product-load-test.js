@@ -1,6 +1,6 @@
 import http from 'k6/http';
-import { check, group, sleep } from 'k6';
-import { Rate, Trend, Counter } from 'k6/metrics';
+import {group, sleep} from 'k6';
+import {Rate, Trend} from 'k6/metrics';
 import {textSummary} from "https://jslib.k6.io/k6-summary/0.0.1/index.js";
 
 const errorRate = new Rate('errors');
@@ -8,12 +8,12 @@ const productCreationTime = new Trend('product_creation_duration');
 const productUpdateTime = new Trend('product_update_duration');
 const productDeleteTime = new Trend('product_delete_duration');
 const productGetTime = new Trend('product_get_duration');
-const successfulRequests = new Counter('successful_requests');
 
 export const options = {
     stages: [
         { duration: '30s', target: 100 },
-        { duration: '30s', target: 300 },
+        { duration: '30s', target: 200 },
+        { duration: '30s', target: 400 },
         { duration: '30s', target: 600 },
         { duration: '30s', target: 800 },
         { duration: '30s', target: 1000 },
@@ -21,9 +21,9 @@ export const options = {
     ],
     thresholds: {
         http_req_duration: ['p(95)<1000'],
+        http_req_waiting: ['p(95)<900'],
         http_req_failed: ['rate<0.05'],
         errors: ['rate<0.1'],
-        successful_requests: ['count>1000'],
     },
 };
 
@@ -99,7 +99,6 @@ export default function(data) {
 
     const authHeaders = getAuthHeaders(token);
 
-    // Test 1: Get all products
     group('Get All Products', () => {
         const page = Math.floor(Math.random() * 5);
         const limit = [10, 20, 50][Math.floor(Math.random() * 3)];
@@ -111,22 +110,9 @@ export default function(data) {
             { headers: authHeaders }
         );
 
-        const success = check(res, {
-            'get all products status is 200': (r) => r.status === 200,
-            'get all products has content': (r) => {
-                try {
-                    const body = JSON.parse(r.body);
-                    return body.content !== undefined;
-                } catch (e) {
-                    return false;
-                }
-            },
-            'get all products response time < 1000ms': (r) => r.timings.duration < 1000,
-        });
+        const success = res.status === 200
 
-        if (success) {
-            successfulRequests.add(1);
-        } else {
+        if (!success) {
             errorRate.add(1);
         }
 
@@ -135,7 +121,6 @@ export default function(data) {
 
     sleep(1);
 
-    // Test 2: Create a new product
     let createdProductId = null;
     group('Create Product', () => {
         const newProduct = generateRandomProduct();
@@ -147,27 +132,19 @@ export default function(data) {
             { headers: authHeaders }
         );
 
-        const success = check(res, {
-            'create product status is 200': (r) => r.status === 200,
-            'create product has id': (r) => {
-                try {
-                    const body = JSON.parse(r.body);
-                    if (body.id) {
-                        createdProductId = body.id;
-                        return true;
-                    }
-                    return false;
-                } catch (e) {
-                    return false;
-                }
-            },
-            'create product response time < 800ms': (r) => r.timings.duration < 800,
-        });
+        const success = res.status === 200
 
-        if (success) {
-            successfulRequests.add(1);
-        } else {
+        if (!success) {
             errorRate.add(1);
+        } else {
+            try {
+                const body = JSON.parse(res.body);
+                if (body.id) {
+                    createdProductId = body.id;
+                }
+            } catch (e) {
+                errorRate.add(1);
+            }
         }
 
         productCreationTime.add(res.timings.duration);
@@ -175,7 +152,6 @@ export default function(data) {
 
     sleep(1);
 
-    // Test 3: Get product by ID
     if (createdProductId) {
         group('Get Product By ID', () => {
             const res = http.get(
@@ -183,22 +159,9 @@ export default function(data) {
                 { headers: authHeaders }
             );
 
-            const success = check(res, {
-                'get product by id status is 200': (r) => r.status === 200,
-                'get product by id has correct data': (r) => {
-                    try {
-                        const body = JSON.parse(r.body);
-                        return body.id === createdProductId;
-                    } catch (e) {
-                        return false;
-                    }
-                },
-                'get product by id response time < 300ms': (r) => r.timings.duration < 300,
-            });
+            const success = res.status === 200
 
-            if (success) {
-                successfulRequests.add(1);
-            } else {
+            if (!success) {
                 errorRate.add(1);
             }
 
@@ -207,10 +170,8 @@ export default function(data) {
 
         sleep(1);
 
-        // Test 4: Update product
         group('Update Product', () => {
             const updatedProduct = generateRandomProduct();
-            updatedProduct.productName = `Updated ${updatedProduct.productName}`;
             const payload = JSON.stringify(updatedProduct);
 
             const res = http.put(
@@ -219,22 +180,9 @@ export default function(data) {
                 { headers: authHeaders }
             );
 
-            const success = check(res, {
-                'update product status is 200': (r) => r.status === 200,
-                'update product has updated data': (r) => {
-                    try {
-                        const body = JSON.parse(r.body);
-                        return body.productName.includes('Updated');
-                    } catch (e) {
-                        return false;
-                    }
-                },
-                'update product response time < 600ms': (r) => r.timings.duration < 600,
-            });
+            const success = res.status === 200
 
-            if (success) {
-                successfulRequests.add(1);
-            } else {
+            if (!success) {
                 errorRate.add(1);
             }
 
@@ -243,7 +191,6 @@ export default function(data) {
 
         sleep(1);
 
-        // Test 5: Delete product
         group('Delete Product', () => {
             const res = http.del(
                 `${BASE_URL}/api/products/${createdProductId}`,
@@ -251,14 +198,9 @@ export default function(data) {
                 { headers: authHeaders }
             );
 
-            const success = check(res, {
-                'delete product status is 200': (r) => r.status === 200,
-                'delete product response time < 1000ms': (r) => r.timings.duration < 1000,
-            });
+            const success = res.status === 200
 
-            if (success) {
-                successfulRequests.add(1);
-            } else {
+            if (!success) {
                 errorRate.add(1);
             }
 

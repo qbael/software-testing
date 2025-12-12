@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(SecurityConfig.class)
 @DisplayName("Security Test - Input Validation & Sanitization")
 public class InputValidationSecurityTest {
 

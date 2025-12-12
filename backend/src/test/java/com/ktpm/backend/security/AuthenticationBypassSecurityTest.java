@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import(SecurityConfig.class)
 @DisplayName("Security Test - Authentication Bypass Prevention")
 public class AuthenticationBypassSecurityTest {
 

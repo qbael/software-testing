@@ -4,13 +4,13 @@ describe("Product E2E Test", () => {
     const page = new ProductPage();
 
     const mockProducts = [
-        { id: 1, productName: "ao", price: 100, quantity: 5, description: "ao dep" },
+        { id: 1, productName: "ao", price: 100, quantity: 5, description: "ao dep", category: "SMARTPHONE" },
     ];
 
     beforeEach(() => {
         cy.intercept("GET", "/api/auth/current", {
             statusCode: 200,
-            body: { id: 1, username: "mindang1", role: "admin" },
+            body: { id: 1, username: "mindang1" },
         }).as("getUser");
 
         cy.intercept("GET", "/api/products*", {
@@ -19,7 +19,6 @@ describe("Product E2E Test", () => {
         }).as("getProducts");
 
         cy.intercept("POST", "/api/products", (req) => {
-            console.log("✅ Intercepted POST request:", req.body);
             req.reply({
                 statusCode: 200,
                 body: { ...req.body, id: 2 },
@@ -49,9 +48,7 @@ describe("Product E2E Test", () => {
         page.clickAddNew();
         cy.get('form').should('be.visible');
         page.fillProductForm({ productName: "iPhone 99", price: "9999", quantity: "10", description: "ok", category: "SMARTPHONE" });
-        cy.get('div._error_1el5m_26').each(($el) => {
-            cy.log($el.text());
-        });
+
         page.submitForm();
         cy.wait("@createProduct");
 
@@ -60,7 +57,7 @@ describe("Product E2E Test", () => {
             body: {
                 content: [
                     ...mockProducts,
-                    { id: 2, productName: "iPhone 99", price: 9999, quantity: 10, description: "ok" }
+                    { id: 2, productName: "iPhone 99", price: 9999, quantity: 10, description: "ok", category: "SMARTPHONE" }
                 ],
                 totalPages: 1
             },
@@ -92,7 +89,7 @@ describe("Product E2E Test", () => {
             body: {
                 content: [
                     ...mockProducts,
-                    { id: 1, productName: "Asus Zenbook", price: 5000, quantity: 2, description: "laptop moi" },
+                    { id: 2, productName: "Asus Zenbook", price: 5000, quantity: 2, description: "laptop moi" },
                 ],
                 totalPages: 1
             },
@@ -105,7 +102,9 @@ describe("Product E2E Test", () => {
     });
 
     it("Filter/Sort sản phẩm theo trường và chiều", () => {
-        cy.visit("/products");
+        page.visit()
+        cy.wait("@getUser");
+        cy.wait("@getProducts");
 
         cy.intercept("GET", "/api/products*", {
             statusCode: 200,
@@ -119,10 +118,11 @@ describe("Product E2E Test", () => {
             },
         }).as("getProducts");
 
-        cy.wait("@getProducts");
 
         cy.get('[data-testid="sort-by"]').select("price");
         cy.get('[data-testid="sort-dir"]').select("desc");
+
+        cy.wait("@getProducts");
 
         cy.get('[data-testid="product-name"]')
             .first()

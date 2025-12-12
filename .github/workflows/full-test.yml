@@ -46,7 +46,7 @@ jobs:
         working-directory: ./backend
         run: |
           chmod +x ./mvnw
-          ./mvnw test
+          ./mvnw clean test
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/ktpm
           SPRING_DATASOURCE_USERNAME: root
@@ -63,7 +63,6 @@ jobs:
       - name: Wait for PostgreSQL
         run: |
           until pg_isready -h localhost -p 5432; do
-            echo "Waiting for PostgreSQL..."
             sleep 2
           done
 
