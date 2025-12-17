@@ -75,7 +75,7 @@ public class SqlInjectionSecurityTest {
     @DisplayName("SQL Injection Test 1: Login với username chứa SQL command")
     void testSqlInjectionInLoginUsername() throws Exception {
         LoginRequestDTO loginRequest = new LoginRequestDTO();
-        loginRequest.setUsername("testuser123' OR '1'x='1");
+        loginRequest.setUsername("testuser123' OR '1'='1");
         loginRequest.setPassword("testuser123");
 
         mockMvc.perform(post("/api/auth/login")

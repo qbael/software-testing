@@ -1,1 +1,113 @@
-try 1
+on:
+ push:
+  branches: [main]
+ pull_request:
+  branches: [main]
+
+jobs:
+ run-tests:
+  run-on: ubuntu-latest
+
+  service:
+   postgres:
+    image: postgres:latest
+    env:
+     POSTGRES_DB:ktpm
+     POSTGRES_USER:root
+     POSTGRES_PASSWORD:password
+    port:
+     - 5432:5432
+  steps:
+   - name:Setup Node
+     uses:action/setup-node@v4
+     with:
+      node-version:22
+      cache:"npm"
+      cache-dependencies-path: ./frontend/my-react-app/package-lock.json
+   - name: Setup Java
+     uses: action/setup-java@v4
+     with:
+      distribution: temurin
+      java-version: 21
+
+   - name: Install Frontend Dependencies
+     work-directory: ./frontend/my-react-app
+     run: npm ci
+
+   - name: Backend Tests
+     work-directory: ./backend
+     run: |
+      chmod +x ./mvnw
+      ./mvnw clean test
+
+   - name: Build backend
+     work-directory: ./backend
+     run: ./mvnw clean package -DskipTests
+
+   - name: Frontend Tests
+     work-directory: ./frontend/my-react-app
+     run: npm test -- --ci --watchAll=false
+
+   - name: Wait For PostgreSQL
+     run: |
+      until pg_ready -h localhost -p 5432; do
+       sleep 2
+      done
+
+   - name: Start Backend
+     work-directory: ./backend
+     run: java -jar target/*.jar &
+
+   - name: Run E2E Tests
+     uses: cypress-io/github-action@v6
+     with:
+      work-directory: ./frontend/my-react-app
+      start: npm run dev
+      wait-on: "http://localhost:3000"
+      browser: chrome
+     env:
+      CYPRESS_HEADLESS: true
+
+
+@SpringBootTest
+@AutoConfigureMockMvc
+public class SQLInjectionSecurityTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    private String token;
+
+    @BeforeEach
+    void setup() throws Exception{
+        String username = "testuser123";
+        String password =  "testuser123";
+
+        RegisterRequestDto register = new RegisterRequestDto();
+        register.setUsername(username);
+        register.setPassword(password);
+        register.setVerifyPassword(password);
+
+        mockMvc.perform(post("/api/auth/register")
+                            .contentType(Media.APLLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(register)))
+                        .andExpect(r -> {
+                            int status = r.getResponse().getStatus();
+                            assertTrue(status == 201 || status == 409);
+                        });
+
+        LoginRequestDto login = new LoginRequestDto()
+        login.setUsername(username);
+        login.setPassword(password);
+
+        mockMvc.perform(post("/api/auth/login")
+                            .contentType(Media.APLLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(login)))
+                       .andExpect(status().isOk())
+                       .andReturn()
+                       .getResponse()
+                       .getCookies("token")
+
+    }
+}

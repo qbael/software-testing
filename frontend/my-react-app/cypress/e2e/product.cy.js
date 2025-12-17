@@ -89,7 +89,7 @@ describe("Product E2E Test", () => {
             body: {
                 content: [
                     ...mockProducts,
-                    { id: 2, productName: "Asus Zenbook", price: 5000, quantity: 2, description: "laptop moi" },
+                    { id: 2, productName: "Asus Zenbook", price: 5000, quantity: 2, description: "laptop moi", category: "LAPTOPS" },
                 ],
                 totalPages: 1
             },
